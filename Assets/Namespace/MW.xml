@@ -1,0 +1,919 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>MW</name>
+    </assembly>
+    <members>
+        <member name="T:MW.EButton">
+            <summary>The mouse buttons on a standard mouse.</summary>
+        </member>
+        <member name="T:MW.EDirection">
+            <summary>Orientations for specific faces.</summary>
+        </member>
+        <member name="T:MW.EEquation">
+            <summary>Interpolating equations.</summary>
+        </member>
+        <member name="T:MW.EUnits">
+            <summary>Units of measurement of speed.</summary>
+        </member>
+        <member name="M:MW.Easing.Interpolate.GetEasingFunction(MW.EEquation)">
+            <summary>
+            Returns the function associated to the easingFunction enum. This fDuration returned should be cached as it allocates memory
+            to return.
+            </summary>
+            <param name="EEasingFunction">The enum associated with the easing function.</param>
+            <returns>The easing function</returns>
+        </member>
+        <member name="M:MW.Easing.Interpolate.GetEasingFunctionDerivative(MW.EEquation)">
+            <summary>
+            Gets the derivative function of the appropriate easing function. If you use an easing function for position then this
+            function can get you the speed at a given time (normalized).
+            </summary>
+            <param name="easingFunction"></param>
+            <returns>The derivative function</returns>
+        </member>
+        <member name="F:MW.Kinetic.Kinematics.kVelocityRatio">
+            <summary>Convert inspector speed to m/s.</summary>
+        </member>
+        <member name="M:MW.Kinetic.Kinematics.HasReached(UnityEngine.Vector3,UnityEngine.Vector3,System.Single,System.Boolean)">
+            <summary>If the distance between from and to is less than or EqualTo detection.</summary>
+            <param name="vFrom">The reference coordinate to compare.</param>
+            <param name="vTo">The target coordinate to compare.</param>
+            <param name="fDistance">The range that is considered if from has 'reached' to.</param>
+            <param name="bEqualTo">If this calculation needs to check if the distance between from and to are equal.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MW.Kinetic.Kinematics.HasReached(UnityEngine.Vector3,UnityEngine.Vector3,System.Boolean,System.Single)">
+            <summary>If the distance between from and to is less than or EqualTo detection.</summary>
+            <param name="vFrom">The reference coordinate to compare.</param>
+            <param name="vTo">The target coordinate to compare.</param>
+            <param name="bEqualTo">If this calculation needs to check if the distance between from and to are equal.</param>
+            <param name="fDistance">The range that is considered if from has 'reached' to.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MW.Kinetic.Kinematics.HomeTowards(UnityEngine.Rigidbody,UnityEngine.Transform,System.Single,System.Single)">
+            <summary>Moves self towards target while moving at velocity with a maximum turn angle of TurnRadius degrees.</summary>
+            <param name="RSelf">The Rigidbody to move.</param>
+            <param name="ATarget">The Transform destination.</param>
+            <param name="fVelocity">The rate at which self moves towards target.</param>
+            <param name="fTurnRadius">The maximum degrees self can turn towards target.</param>
+        </member>
+        <member name="M:MW.Kinetic.Kinematics.HomeTowards(UnityEngine.Rigidbody,UnityEngine.Vector3,System.Single,System.Single)">
+            <summary>Moves self towards target while moving at velocity with a maximum turn angle of TurnRadius degrees.</summary>
+            <param name="RSelf">The Rigidbody to move.</param>
+            <param name="vTarget">The destination coordinates.</param>
+            <param name="fVelocity">The rate at which self moves towards target.</param>
+            <param name="fTurnRadius">The maximum degrees self can turn towards target.</param>
+        </member>
+        <member name="M:MW.Kinetic.Aerodynamics.AirResistance(UnityEngine.Rigidbody)">
+            <summary>The direction of natural air resistance.</summary>
+            <param name="RSelf">The rigidbody to apply air resistance to.</param>
+        </member>
+        <member name="M:MW.Kinetic.Aerodynamics.Lift(System.Single,System.Single,System.Single,System.Single)">
+            <summary>The scale of lift applied to a wing with fWingArea travelling at fVelocity through a fluid at fDensity with fLiftCoefficient.</summary>
+            <param name="fLiftCoefficient">The heuristic coefficient for lift.</param>
+            <param name="fDensity">The density of the fluid.</param>
+            <param name="fVelocity">The speed at which the wing is travelling.</param>
+            <param name="fWingArea">The area of the wing.</param>
+        </member>
+        <member name="M:MW.Kinetic.Miscellanous.CollisionAvoidance(UnityEngine.Transform,System.Single,System.Single,UnityEngine.LayerMask,System.Boolean)">
+            <summary>The direction in which to avoid colliding with obstacles.</summary>
+            <param name="ASelf">The transform wanting to avoid collisions.</param>
+            <param name="fAngle">The angle to search for potential collisions.</param>
+            <param name="fSearchDistance">The distance to search for collisions.</param>
+            <param name="lmObstacles">The layer to avoid colliding with.</param>
+            <param name="bDebug">[EDITOR ONLY] Draw lines of the collision avoidance search. Red is the closest collision. Blue is the moving forward direction.</param>
+        </member>
+        <member name="M:MW.Math.Mathematics.Acceleration(MW.EEquation,System.Single,System.Single,System.Single)">
+            <param name="EEquation">The equation to use to accelerate.</param>
+            <param name="fCurrentSpeed">The current speed of the acceleration.</param>
+            <param name="fRateOfAcceleration">The rate to accelerate towards to terminal from current speed.</param>
+            <param name="fTerminal">The maximum speed.</param>
+            <returns>The acceleration value using Easing equation, using the current speed and rate of acceleration towards terminal by over time.</returns>
+        </member>
+        <member name="M:MW.Math.Mathematics.AccelerationRate(UnityEngine.Rigidbody,System.Single)">
+            <param name="RSelf">The rigidbody to calculate an acceleration rate.</param>
+            <param name="fSpeed">The current speed of the rigidbody.</param>
+            <returns>The float rate of movement in metres per second.</returns>
+        </member>
+        <member name="M:MW.Math.Mathematics.Speed(UnityEngine.Rigidbody,MW.EUnits)">
+            <param name="RSelf">The Rigidbody to read a speed from.</param>
+            <param name="UUnit">The desired unit of measurement.</param>
+            <returns>A speed reading from self in unit of measurement.</returns>
+        </member>
+        <member name="M:MW.Math.Mathematics.PredictiveProjectile(UnityEngine.Rigidbody,UnityEngine.Rigidbody)">
+            <summary>The direction to intercept RBTarget relative to RSelf.</summary>
+            <param name="RSelf">The Rigidbody predicting the movement of RBTarget.</param>
+            <param name="RBTarget">The Rigidbody to predict.</param>
+        </member>
+        <member name="M:MW.Math.Mathematics.IsPowerOfTwo(System.Int32)">
+            <summary>Whether nNumber is a power of two.</summary>
+            <param name="nNumber">The number to check.</param>
+        </member>
+        <member name="M:MW.Math.Mathematics.GreatestCommonDivisor(System.Int32,System.Int32)">
+            <summary>The greatest common divisor of na and nb.</summary>
+        </member>
+        <member name="M:MW.Math.Mathematics.LowestCommonMultiple(System.Int32,System.Int32)">
+            <summary>The lowest common multiple of na and nb.</summary>
+        </member>
+        <member name="M:MW.Math.Mathematics.Wrap(System.Single,System.Single,System.Single)">
+            <summary>Wraps f between fMin and fMax.</summary>
+            <param name="f">The float number to wrap.</param>
+            <param name="fMin">The minimum value to wrap.</param>
+            <param name="fMax">The maximum value to wrap.</param>
+        </member>
+        <member name="M:MW.Math.Mathematics.Wrap(System.Int32,System.Int32,System.Int32)">
+            <summary>Wraps n between nMin and nMax.</summary>
+            <param name="n">The float number to wrap.</param>
+            <param name="nMin">The minimum value to wrap.</param>
+            <param name="nMax">The maximum value to wrap.</param>
+        </member>
+        <member name="M:MW.Math.Mathematics.Parallel(UnityEngine.Vector3,UnityEngine.Vector3,System.Single)">
+            <summary>Whether v1 is parallel to v2 within fParallelThreshold.</summary>
+            <param name="v1">Whether this vector is parallel to the other.</param>
+            <param name="v2">Whether this vector is parallel to the other.</param>
+            <param name="fParallelThreshold">The threshold to consider parallel vectors.</param>
+        </member>
+        <member name="M:MW.Math.Mathematics.IsNormalised(UnityEngine.Vector3)">
+            <summary>Whether vVector has been normalised.</summary>
+            <param name="vVector">The vector to check.</param>
+        </member>
+        <member name="M:MW.Math.Mathematics.AngleFromVectorXZ(UnityEngine.Vector3)">
+            <summary>The angle in degrees pointing towards vDirection using the X-Axis and Z-Axis. (For 3D space)</summary>
+            <param name="vDirection">The direction to calculate an angle towards.</param>
+        </member>
+        <member name="M:MW.Math.Mathematics.AngleFromVectorXY(UnityEngine.Vector3)">
+            <summary>The angle in degrees pointing towards vDirection using the X-Axis and Y-Axis. (For 2D space)</summary>
+            <param name="vDirection">The direction to calculate an angle towards.</param>
+        </member>
+        <member name="M:MW.Math.Mathematics.VectorFromAngle(System.Single,MW.EDirection)">
+            <summary>Returns a normalised Vector at fDegrees, relative to dirForward.</summary>
+            <param name="fDegrees">The angle offset.</param>
+            <param name="dirForward">The forward direction.</param>
+        </member>
+        <member name="P:MW.Vector.MVector.YZ">
+            <summary>A new MVector ignoring the X component.</summary>
+        </member>
+        <member name="P:MW.Vector.MVector.XZ">
+            <summary>A new MVector ignoring the Y component.</summary>
+        </member>
+        <member name="P:MW.Vector.MVector.XY">
+            <summary>A new MVector ignoring the Z component.</summary>
+        </member>
+        <member name="M:MW.Vector.MVector.#ctor(System.Single)">
+            <summary>Construct all components to U.</summary>
+        </member>
+        <member name="M:MW.Vector.MVector.#ctor(System.Single,System.Single)">
+            <summary>Construct with X and Y components only.</summary>
+        </member>
+        <member name="M:MW.Vector.MVector.#ctor(System.Single,System.Single,System.Single)">
+            <summary>Construct an MVector with X, Y, and Z components.</summary>
+        </member>
+        <member name="M:MW.Vector.MVector.#ctor(UnityEngine.Vector3)">
+            <summary>Construct an MVector with respect to a Vector3.</summary>
+            <param name="xyz"></param>
+        </member>
+        <member name="F:MW.Vector.MVector.Zero">
+            <summary>Short for writing MVector(0, 0, 0).</summary>
+        </member>
+        <member name="F:MW.Vector.MVector.Right">
+            <summary>Short for writing MVector(1, 0, 0).</summary>
+        </member>
+        <member name="F:MW.Vector.MVector.Up">
+            <summary>Short for writing MVector(0, 1, 0).</summary>
+        </member>
+        <member name="F:MW.Vector.MVector.Forward">
+            <summary>Short for writing MVector(0, 0, 1).</summary>
+        </member>
+        <member name="M:MW.Vector.MVector.ToVector3(MW.Vector.MVector)">
+            <summary>Converts an MVector to a Vector3.</summary>
+            <param name="mVector">The MVector to convert.</param>
+        </member>
+        <member name="M:MW.Vector.MVector.ToMVector(UnityEngine.Vector3)">
+            <summary>Converts a Vector3 to an MWVector.</summary>
+            <param name="vVector">The Vector3 to convert.</param>
+        </member>
+        <member name="M:MW.Vector.MVector.Normalise(MW.Vector.MVector)">
+            <summary>Normalises mVector.</summary>
+        </member>
+        <member name="M:MW.Vector.MVector.Cross(MW.Vector.MVector,MW.Vector.MVector)">
+            <summary>The vector cross product of left and right.</summary>
+        </member>
+        <member name="M:MW.Vector.MVector.Dot(MW.Vector.MVector,MW.Vector.MVector)">
+            <summary>The vector dot product of left and right.</summary>
+        </member>
+        <member name="M:MW.Vector.MVector.Parallel(MW.Vector.MVector,MW.Vector.MVector)">
+            <summary>Whether left and right are parallel to each other.</summary>
+        </member>
+        <member name="M:MW.Vector.MVector.MVectorFromAngle(System.Single,MW.EDirection)">
+            <summary>A normalised MVector at fDegrees, relative to dirForward.</summary>
+            <param name="fDegrees">The angle offset.</param>
+            <param name="dirForward">The forward direction.</param>
+        </member>
+        <member name="M:MW.Vector.MVector.Distance(MW.Vector.MVector,MW.Vector.MVector)">
+            <summary>The distance between left and right.</summary>
+        </member>
+        <member name="P:MW.Vector.MVector.SqrMagnitude">
+            <summary>The square magnitude of this MVector.</summary>
+        </member>
+        <member name="P:MW.Vector.MVector.Magnitude">
+            <summary>The magnitude of this MVector.</summary>
+        </member>
+        <member name="P:MW.Vector.MVector.Abs">
+            <summary>The absolute value of this MVector.</summary>
+        </member>
+        <member name="P:MW.Vector.MVector.Normalised">
+            <summary>The normalised version of this MVector.</summary>
+        </member>
+        <member name="M:MW.Vector.MVector.Normalise">
+            <summary>Normalises this MVector.</summary>
+        </member>
+        <member name="M:MW.Vector.MVector.Set(System.Single,System.Single,System.Single)">
+            <summary>Sets this MVector's components.</summary>
+        </member>
+        <member name="M:MW.Vector.MVector.IsNormalised">
+            <summary>Whether this MVector is a unit vector. (If this MVector is normalised)</summary>
+            <returns></returns>
+        </member>
+        <member name="M:MW.Vector.MVector.Mirror(MW.Vector.MVector)">
+            <summary>This MVector's reflection among mNormal.</summary>
+            <param name="mNormal">The normal vector to mirror.</param>
+        </member>
+        <member name="M:MW.Vector.MVector.RotateAngleAxis(System.Single,MW.Vector.MVector)">
+            <summary>Rotates this MVector at an angle of fAngleDegrees around mAxis.</summary>
+            <param name="fAngleDegrees">The degrees at which to rotate this MVector.</param>
+            <param name="mAxis">The axis to rotate this MVector around.</param>
+        </member>
+        <member name="M:MW.Vector.MVector.DirectionAndLength">
+            <summary>The direction and length of this MVector.</summary>
+            <returns>TPair::First The direction of this MVector. TPair::Second The length of this MVector.</returns>
+        </member>
+        <member name="M:MW.Vector.MVector.Projection">
+            <summary>This MVector's projection.</summary>
+        </member>
+        <member name="M:MW.Vector.MVector.Rotation">
+            <summary>The Quaternion this MVector represents.</summary>
+        </member>
+        <member name="M:MW.Vector.MVector.IgnoreX">
+            <summary>Ignores the X component of this MVector.</summary>
+        </member>
+        <member name="M:MW.Vector.MVector.IgnoreY">
+            <summary>Ignores the Y component of this MVector.</summary>
+        </member>
+        <member name="M:MW.Vector.MVector.IgnoreZ">
+            <summary>Ignores the Z component of this MVector.</summary>
+        </member>
+        <member name="M:MW.Vector.MVector.op_ExclusiveOr(MW.Vector.MVector,MW.Vector.MVector)">
+            <summary>The vector cross product.</summary>
+        </member>
+        <member name="M:MW.Vector.MVector.op_BitwiseOr(MW.Vector.MVector,MW.Vector.MVector)">
+            <summary>The vector dot product.</summary>
+        </member>
+        <member name="M:MW.Vector.MVector.op_GreaterThan(MW.Vector.MVector,MW.Vector.MVector)">
+            <summary>Normalised direction from to.</summary>
+        </member>
+        <member name="M:MW.Vector.MVector.op_LessThan(MW.Vector.MVector,MW.Vector.MVector)">
+            <summary>Normalised direction from to.</summary>
+        </member>
+        <member name="M:MW.Vector.MVector.op_Implicit(MW.Vector.MVector)~UnityEngine.Color">
+            <summary>The colour representation of this MVector, in 0-255 XYZ/RGB.</summary>
+        </member>
+        <member name="T:MW.Audio.MAudio">
+            <summary>The Audio controller for in-game sounds.</summary>
+        </member>
+        <member name="P:MW.Audio.MAudio.AAudioInstance">
+            <summary>A unique reference to the only Audio object in the scene.</summary>
+        </member>
+        <member name="F:MW.Audio.MAudio.bMuteAllByDefault">
+            <summary>Whether or not to mute every sound by default.</summary>
+        </member>
+        <member name="F:MW.Audio.MAudio.SSounds">
+            <summary>Every sound that this Audio object will control.</summary>
+        </member>
+        <member name="M:MW.Audio.MAudio.Initialise(MW.Audio.MSound[])">
+            <summary>Populates the Sounds array to match the settings.</summary>
+        </member>
+        <member name="M:MW.Audio.MAudio.Play(System.String)">
+            <summary>Plays sound of name n.</summary>
+            <param name="sName">The name of the requested sound to play.</param>
+        </member>
+        <member name="M:MW.Audio.MAudio.Stop(System.String)">
+            <summary>Stops sound of name n.</summary>
+            <param name="sName">The name of the requested sound to stop playing.</param>
+        </member>
+        <member name="M:MW.Audio.MAudio.StopAll">
+            <summary>Stop every sound in the game.</summary>
+        </member>
+        <member name="M:MW.Audio.MAudio.Find(System.String)">
+            <summary>Returns a sound in the Sounds array.</summary>
+            <param name="n">The name of the requested sound.</param>
+            <returns>The sound clip of the requested sound.</returns>
+        </member>
+        <member name="M:MW.Audio.MAudio.IsPlaying(System.String)">
+            <summary>Whether or not sound of name n is playing.</summary>
+            <param name="sName">The name of the sound to query.</param>
+        </member>
+        <member name="P:MW.Behaviour.MPlayer.Position">
+            <summary>The world position of this player.</summary>
+        </member>
+        <member name="M:MW.Behaviour.MPlayer.ForwardInput(System.Single)">
+            <summary>Moves this player forward. Default direction is transform.forward.</summary>
+            <remarks>Uses UnityEngine.Rigibody.MovePosition to enforce movement.</remarks>
+            <param name="Throw">Input vector.</param>
+        </member>
+        <member name="M:MW.Behaviour.MPlayer.RightInput(System.Single)">
+            <summary>Moves this player right. Default direction is transform.right.</summary>
+            <remarks>Uses UnityEngine.Rigibody.MovePosition to enforce movement.</remarks>
+            <param name="Throw">Input vector.</param>
+        </member>
+        <member name="M:MW.Behaviour.MPlayer.Jump(System.Single)">
+            <summary>Adds force upwards to this player. Default direction is MVector.Up.</summary>
+            <remarks>Uses UnityEngine.Rigibody.AddForce.</remarks>
+            <param name="Force">The amount of force to apply.</param>
+        </member>
+        <member name="M:MW.Behaviour.MPlayer.SetMovementSpeed(System.Single)">
+            <summary>Sets MovementSpeed to NewMovementSpeed.</summary>
+            <remarks>Also updates the default, initial movement speed. TemporaryMovementSpeed(float, float) will revert to NewMovementSpeed.</remarks>
+            <param name="NewMovementSpeed">The new Movement Speed of this player.</param>
+        </member>
+        <member name="M:MW.Behaviour.MPlayer.TemporaryMovementSpeed(System.Single,System.Single)">
+            <summary>Temporarily modifies this player's MovementSpeed.</summary>
+            <remarks>Calling StopCoroutine on the returned IEnumerator will not reset the player's MovementSpeed.</remarks>
+            <param name="TemporaryMovementSpeed">The temporary MovementSpeed.</param>
+            <param name="Duration">The time in seconds in which TemporaryMovementSpeed will be in effect.</param>
+            <returns>The IEnumerator that handles timing.</returns>
+        </member>
+        <member name="M:MW.Behaviour.MPlayer.ResetMovementSpeed">
+            <summary>Set this player's MovementSpeed to the initial.</summary>
+        </member>
+        <member name="T:MW.Pathfinding.Pathfinding`1">
+            <summary>Provides the A* Pathfinding implementation for T.</summary>
+            <typeparam name="T">Generic type that implements INode and IHeapItem for T that defines a traversable waypoint.</typeparam>
+        </member>
+        <member name="M:MW.Pathfinding.Pathfinding`1.AStar(`0,`0,System.Collections.Generic.List{`0}@,System.UInt32,System.UInt32,System.Action{System.Collections.Generic.List{`0}},System.Action{System.Collections.Generic.List{`0}},System.Boolean)">
+            <summary>A* pathfinds from Origin to Destination looking uDepth times within a uMapSize.</summary>
+            <param name="Origin">T position to begin pathfinding.</param>
+            <param name="Destination">T position to pathfind to.</param>
+            <param name="Path">Reference T List of that make up the path from Origin to Destination.</param>
+            <param name="uDepth">The depth to search to.</param>
+            <param name="uMapSize">The total size of the map to be traversed. (The number of INodes).</param>
+            <param name="OnPathFound">What to do when a path is found? Passes the reference successful Path as a parameter.</param>
+            <param name="OnPathFailed">What to do when a path cannot be found? Passes the current state of the Path as a parameter.</param>
+            <param name="bUseDiagnostics">Time the duration of Pathfinding?</param>
+            <returns>Whether or not a path was found from Origin to Destination within uDepth in uMapSize.</returns>
+        </member>
+        <member name="T:MW.Pathfinding.PathRegister`1">
+            <summary>Computes a number of paths over a number of frames.</summary>
+            <typeparam name="T">Generic type that implements INode and IHeapItem for T that defines a traversable waypoint.</typeparam>
+        </member>
+        <member name="M:MW.Pathfinding.PathRegister`1.RequestPath(`0,`0,System.Action{System.Collections.Generic.List{`0}},System.Action{System.Collections.Generic.List{`0}})">
+            <summary>Register a path to compute when possible.</summary>
+            <remarks>This is on a first-in, first-out basis. A Queue.</remarks>
+            <param name="Origin">T position to begin pathfinding.</param>
+            <param name="Destination">T position to pathfind to.</param>
+            <param name="OnPathCalculated">What to do when a path is found? List of T pathway.</param>
+            <param name="OnPathFailed">What to do when a path cannot be found? List of T pathway attempt.</param>
+        </member>
+        <member name="M:MW.Pathfinding.PathRegister`1.ComputeNext">
+            <summary>Computes the next path in FIFO.</summary>
+            <returns>Whether or not a computation was executed.</returns>
+        </member>
+        <member name="M:MW.Pathfinding.PathRegister`1.ComputeBatch(System.UInt32)">
+            <summary>Computes BatchSize paths in a single call.</summary>
+            <param name="BatchSize">The number of paths to compute.</param>
+        </member>
+        <member name="M:MW.Pathfinding.PathRegister`1.GetPathQueueSize">
+            <summary>Gets the number of agents waiting to compute paths.</summary>
+            <returns>Unsigned integer number of T's awaiting a path.</returns>
+        </member>
+        <member name="T:MW.Pathfinding.MPathManager`1">
+            <summary>The MonoBehavior script that manages pathfinding over frames.</summary>
+            <typeparam name="T">Generic type that implements INode and IHeapItem for T that defines a traversable waypoint.</typeparam>
+        </member>
+        <member name="M:MW.Pathfinding.MPathManager`1.Pause">
+            <summary>Halt the computation of paths.</summary>
+        </member>
+        <member name="M:MW.Pathfinding.MPathManager`1.Resume">
+            <summary>Continue the computation of paths.</summary>
+        </member>
+        <member name="M:MW.Pathfinding.MPathManager`1.Status">
+            <summary>Prints the current status of this Path Manager.</summary>
+            <returns>If this Path Manager is currently Paused, or Running.</returns>
+        </member>
+        <member name="P:MW.Pathfinding.INode`1.F">
+            <summary>This Node's F score.</summary>
+        </member>
+        <member name="P:MW.Pathfinding.INode`1.G">
+            <summary>This Node's G score.</summary>
+        </member>
+        <member name="P:MW.Pathfinding.INode`1.H">
+            <summary>This Node's H score.</summary>
+        </member>
+        <member name="P:MW.Pathfinding.INode`1.NumberOfDirections">
+            <summary>How many directions can this Node point to?</summary>
+        </member>
+        <member name="M:MW.Pathfinding.INode`1.IsTraversable">
+            <summary>Is this block traversable?</summary>
+        </member>
+        <member name="M:MW.Pathfinding.INode`1.Neighbour(System.UInt32)">
+            <summary>Get the Neighbouring Node at uDirection.</summary>
+            <param name="uDirection">The neighbour of this Node in this direction.</param>
+        </member>
+        <member name="M:MW.Pathfinding.INode`1.DistanceHeuristic(`0)">
+            <summary>The distance heuristic to calculate pathfinding scores.</summary>
+            <param name="RelativeTo">Distance to from this T to Relative To.</param>
+            <returns>An indicative distance from this T, Relative To.</returns>
+        </member>
+        <member name="M:MW.Optics.Tracking.CameraFollow(UnityEngine.Camera,UnityEngine.Transform)">
+            <summary>Have the camera follow target's transform.</summary>
+            <param name="CCamera">The camera to move.</param>
+            <param name="ATarget">The target's transform component.</param>
+        </member>
+        <member name="M:MW.Optics.Tracking.CameraFollow(UnityEngine.Camera,UnityEngine.Transform,UnityEngine.Vector3)">
+            <summary>Have the camera to follow target's transform at an offset.</summary>
+            <param name="CCamera">The camera to move.</param>
+            <param name="ATarget">The target's transform component.</param>
+            <param name="vOffset">The target's position at an offset.</param>
+        </member>
+        <member name="M:MW.Optics.Tracking.CameraFollow(UnityEngine.Camera,UnityEngine.Vector3)">
+            <summary>Have the camera follow target's position.</summary>
+            <param name="CCamera">The camera to move.</param>
+            <param name="vTarget">The target's position to follow.</param>
+        </member>
+        <member name="M:MW.Optics.Tracking.CameraFollow(UnityEngine.Camera,UnityEngine.Vector3,UnityEngine.Vector3)">
+            <summary>Have the camera follow target's position at an offset.</summary>
+            <param name="CCamera">The camera to move.</param>
+            <param name="vTarget">The target's position to follow.</param>
+            <param name="vOffset">The target's position at an offset.</param>
+        </member>
+        <member name="M:MW.Optics.Tracking.CameraFollow(UnityEngine.Transform)">
+            <summary>Have the main camera follow target's transform.</summary>
+        </member>
+        <member name="M:MW.Optics.Tracking.CameraFollow(UnityEngine.Transform,UnityEngine.Vector3)">
+            <summary>Have the main camera follow target's transform at an offset.</summary>
+            <param name="ATarget">The target's transform component.</param>
+            <param name="vOffset">The target's position at an offset.</param>
+        </member>
+        <member name="M:MW.Optics.Tracking.CameraFollow(UnityEngine.Vector3)">
+            <summary>Have the main camera follow target's position.</summary>
+        </member>
+        <member name="M:MW.Optics.Tracking.CameraFollow(UnityEngine.Vector3,UnityEngine.Vector3)">
+            <summary>Have the main camera follow target's position at an offset.</summary>
+            <param name="vTarget">The target's position.</param>
+            <param name="vOffset">The target's position at an offset.</param>
+        </member>
+        <member name="M:MW.Optics.Tracking.Billboard(UnityEngine.Transform)">
+            <summary>Ensures the transform always faces the main camera.</summary>
+            <param name="ASelf">The transform to look towards the main camera.</param>
+        </member>
+        <member name="M:MW.Optics.Tracking.Billboard(UnityEngine.Transform,UnityEngine.Camera)">
+            <summary>Ensures the transform always faces camera.</summary>
+            <param name="ASelf">The transform to look towards the camera.</param>
+            <param name="CCamera">The camera to look at.</param>
+        </member>
+        <member name="M:MW.Optics.Tracking.Billboard(UnityEngine.Transform,UnityEngine.Transform)">
+            <summary>Ensures the transform always faces point.</summary>
+            <param name="ASelf">The transform to look towards the point.</param>
+            <param name="APoint">The transform of where self needs to look towards</param>
+        </member>
+        <member name="M:MW.Optics.Tracking.Billboard(UnityEngine.Transform,UnityEngine.Vector3)">
+            <summary>Ensures the transform always faces point.</summary>
+            <param name="ASelf">The transform to look towards the point.</param>
+            <param name="vPoint">The point in world coordinates.</param>
+        </member>
+        <member name="M:MW.Optics.Orthographic.Raycast(UnityEngine.Camera)">
+            <summary>Fires a ray from CCamera to mouse position.</summary>
+            <returns>TPair::First RaycastHit2D information about the Raycast. TPair::Second if the ray hit something.</returns>
+        </member>
+        <member name="F:MW.Optics.Orthographic.PPlane">
+            <summary>The Plane to pan a Camera for an Orthographic world.</summary>
+        </member>
+        <member name="M:MW.Optics.Orthographic.Pan(UnityEngine.Camera,MW.EButton,System.Single)">
+            <summary>Pan CCamera using BButtonToActivate by linearlly interpolating with fInterpolateSpeed.</summary>
+            <param name="CCamera">The camera to pan.</param>
+            <param name="BButtonToActivate">The mouse button to start activate panning.</param>
+            <param name="fInterpolateSpeed">The speed to ease the camera's movement.</param>
+        </member>
+        <member name="M:MW.Conversion.Colour.Colour255(UnityEngine.Vector3)">
+            <summary>The corresponding colour in RGA using Vector3.</summary>
+            <param name="vColour">The RGB/XYZ channel values, respectively.</param>
+        </member>
+        <member name="M:MW.Conversion.Colour.Colour255(System.Int32,System.Int32,System.Int32)">
+            <summary>The corresponding colour from 0 - 255 in RGB.</summary>
+            <param name="r">The red value.</param>
+            <param name="g">The green value.</param>
+            <param name="b">The blue value.</param>
+        </member>
+        <member name="M:MW.Conversion.Colour.Colour255(System.Single,System.Single,System.Single)">
+            <summary>The corresponding colour from 0 - 255 in RGB.</summary>
+            <param name="r">The red value.</param>
+            <param name="g">The green value.</param>
+            <param name="b">The blue value.</param>
+        </member>
+        <member name="M:MW.Conversion.Colour.Colour255(UnityEngine.Vector4)">
+            <summary>The corresponding colour in RGBA using Vector4.</summary>
+            <param name="v4Colour">The RGBA/XYZW channel values, respectivaly.</param>
+        </member>
+        <member name="M:MW.Conversion.Colour.Colour255(System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>The corresponding colour from 0 - 255 in RGBA.</summary>
+            <param name="r">The red value.</param>
+            <param name="g">The green value.</param>
+            <param name="b">The blue value.</param>
+            <param name="a">The alpha value.</param>
+        </member>
+        <member name="M:MW.Conversion.Colour.Colour255(System.Single,System.Single,System.Single,System.Single)">
+            <summary>The corresponding colour from 0 - 255 in RGBA.</summary>
+            <param name="r">The red value.</param>
+            <param name="g">The green value.</param>
+            <param name="b">The blue value.</param>
+            <param name="a">The alpha value.</param>
+        </member>
+        <member name="M:MW.Conversion.Colour.ColourHex(System.String)">
+            <summary>Converts a hexadecimal to its corresponding colour.</summary>
+             <param name="sHex">The hexadecimal in the format: "#RRGGBB"; where '#' denotes a hexadecimal, 'RR' denotes the Red colour channel, 'GG' denotes the Green colour channel and 'BB' denotes the Blue colour channel.</param>
+        </member>
+        <member name="M:MW.Conversion.Colour.ColourHex(System.String,System.Single)">
+            <summary>The corresponding hexadecimal and alpha colour.</summary>
+            <param name="sHex">The hexadecimal in the format: "#RRGGBB"; where '#' denotes a hexadecimal, 'RR' denotes the Red colour channel, 'GG' denotes the Green colour channel and 'BB' denotes the Blue colour channel.</param>
+            <param name="fAlpha">The float alpha.</param>
+        </member>
+        <member name="M:MW.Conversion.Colour.ColourHex(System.String,System.String)">
+            <summary>The corresponding hexadecimal colour and hexadecimal alpha.</summary>
+            <param name="sHex">The hexadecimal in the format: "#RRGGBB"; where '#' denotes a hexadecimal, 'RR' denotes the Red colour channel, 'GG' denotes the Green colour channel and 'BB' denotes the Blue colour channel.</param>
+            <param name="sAlpha">The hexadecimal in the format: "#AA"; where '#' denotes a hexadecimal and 'AA' denotes the Alpha channel.</param>
+        </member>
+        <member name="M:MW.Conversion.Bearing.Direction(UnityEngine.Vector3,UnityEngine.Vector3)">
+            <summary>The normalised direction to to, relative to from.</summary>
+            <param name="vFrom">The Vector3 seeking a direction to to.</param>
+            <param name="vTo">The direction to look at.</param>
+        </member>
+        <member name="M:MW.Conversion.Bearing.Direction(UnityEngine.Vector2,UnityEngine.Vector2)">
+            <summary>The normalised direction to to, relative to from.</summary>
+            <param name="vFrom">The Vector3 seeking a direction to to.</param>
+            <param name="vTo">The direction to look at.</param>
+        </member>
+        <member name="T:MW.Diagnostics.EVerbosity">
+            <summary>UnityEngine.Debug.[MW.Diagnostics.Stacktrace.EVerbosity]</summary>
+        </member>
+        <member name="T:MW.Diagnostics.Stopwatch">
+            <summary>Track execution time of code.</summary>
+        </member>
+        <member name="M:MW.Diagnostics.Stopwatch.#ctor(System.Boolean)">
+            <summary>Creates a new Stopwatch.</summary>
+            <param name="bStartOnCreation">Immediately starting timing upon instantiating?</param>
+        </member>
+        <member name="M:MW.Diagnostics.Stopwatch.Start">
+            <summary>Start Stopwatch.</summary>
+        </member>
+        <member name="M:MW.Diagnostics.Stopwatch.Stop">
+            <summary>Stop Stopwatch and get the elapsed time.</summary>
+        </member>
+        <member name="M:MW.Diagnostics.Stopwatch.Restart">
+            <summary>Restarts Stopwatch and get the time before restarting.</summary>
+        </member>
+        <member name="M:MW.Diagnostics.Stopwatch.Time">
+            <summary>Get the current elapsed time.</summary>
+        </member>
+        <member name="M:MW.Diagnostics.Stopwatch.TimeInSeconds">
+            <summary>Get the current elapsed time in seconds.</summary>
+        </member>
+        <member name="M:MW.Diagnostics.Stopwatch.ToSeconds(System.Int64)">
+            <summary>Converts milliseconds to seconds.</summary>
+            <param name="lMilliseconds">Milliseconds to convert.</param>
+        </member>
+        <member name="T:MW.Diagnostics.Stacktrace">
+            <summary>Provides a stacktrace for code.</summary>
+        </member>
+        <member name="M:MW.Diagnostics.Stacktrace.Here(MW.Diagnostics.EVerbosity)">
+            <summary>Stacktrace using UnityEngine.Debug with verbosity.</summary>
+            <param name="verbosity">The verbosity of the UnityEngine.Debug.</param>
+        </member>
+        <member name="M:MW.Diagnostics.Stacktrace.Here(System.String,MW.Diagnostics.EVerbosity)">
+            <summary>Stacktrace using UnityEngine.Debug with verbosity and a message.</summary>
+            <param name="sMessage">The message to show.</param>
+            <param name="verbosity">The verbosity og the UnityEngine.Debug.</param>
+        </member>
+        <member name="M:MW.Diagnostics.Log.Print(System.Object[])">
+            <summary>UnityEngine.Logs every object.</summary>
+            <param name="debug">The list of objects to log separated by a space.</param>
+        </member>
+        <member name="M:MW.Diagnostics.Log.PrintError(System.Object[])">
+            <summary>UnityEngine.LogErrors every object.</summary>
+            <param name="debug">The list of objects to log separated by a space.</param>
+        </member>
+        <member name="M:MW.Diagnostics.Log.PrintWarning(System.Object[])">
+            <summary>UnityEngine.LogWarnings every object.</summary>
+            <param name="debug">The list of objects to log separated by a space.</param>
+        </member>
+        <member name="M:MW.IO.I.Click(MW.EButton,System.Boolean,System.Boolean)">
+            <param name="BMouse">The mouse press to listen for.</param>
+            <param name="bHold">Whether or not to check if this button is held down.</param>
+            <param name="bUp">Whether or not to check if this button is released.</param>
+            <returns>If the BMouse was clicked or held.</returns>
+        </member>
+        <member name="M:MW.IO.I.Key(UnityEngine.KeyCode,System.Boolean,System.Boolean)">
+            <param name="KCStroke">The key that was pressed on the keyboard.</param>
+            <param name="bHold">Whether or not to check if this button is held down.</param>
+            <param name="bUp">Whether or not to check if this button is released.</param>
+            <returns>If Stroke was pressed or Held.</returns>
+        </member>
+        <member name="M:MW.HUD.Draw.DrawLine(UnityEngine.LineRenderer,UnityEngine.Vector3,UnityEngine.Vector3,UnityEngine.Color,UnityEngine.Color,System.Single,UnityEngine.Vector3,UnityEngine.Material,System.Boolean)">
+            <summary>Draws a line from to to in StartColor to EndColor at LineWidth thickness with an offset at UseWorldSpace with NumberOfSegments.</summary>
+            <param name="LRSelf">The LineRenderer of the GameObject calling this.</param>
+            <param name="vFrom">The coordinates where the line will originate.</param>
+            <param name="vTo">The coordinates where the line will end.</param>
+            <param name="colStartColour">The starting colour gradient for this line.</param>
+            <param name="colEndColour">The ending colour gradient for this line.</param>
+            <param name="fLineWidth">The thickness of this line.</param>
+            <param name="vOffset">The offset to place this line.</param>
+            <param name="MMaterial">The material used to draw the line.</param>
+            <param name="bUseWorldSpace">Should this line use world space?</param>
+        </member>
+        <member name="M:MW.HUD.Draw.DrawLine(UnityEngine.GameObject,UnityEngine.Vector3,UnityEngine.Vector3,UnityEngine.Color,UnityEngine.Color,System.Single,UnityEngine.Vector3,System.Boolean)">
+            <summary>Draws a line from to to in StartColor to EndColor at LineWidth thickness with an offset at UseWorldSpace with NumberOfSegments.</summary>
+            <param name="GSelf">The GameObject calling this.</param>
+            <param name="vFrom">The coordinates where the line will originate.</param>
+            <param name="vTo">The coordinates where the line will end.</param>
+            <param name="colStartColour">The starting colour gradient for this line.</param>
+            <param name="colEndColour">The ending colour gradient for this line.</param>
+            <param name="fLineWidth">The thickness of this line.</param>
+            <param name="vOffset">The offset to place this line.</param>
+            <param name="bUseWorldSpace">Should this line use world space?</param>
+        </member>
+        <member name="M:MW.HUD.Draw.DrawCircle(UnityEngine.LineRenderer,UnityEngine.Vector3,System.Single,UnityEngine.Color,System.Single,UnityEngine.Material,System.Boolean,System.Int32)">
+            <summary>Draws a circle with a centre at around at radius with a LineColour at LineWidth thickness at UseWorldSpace with NumberOfSegments.</summary>
+            <param name="LRSelf">The LineRenderer of the GameObject calling this.</param>
+            <param name="vAround">The centre of the circle to be drawn.</param>
+            <param name="fRadius">The radius of this circle.</param>
+            <param name="colLineColour">The colour of this circle.</param>
+            <param name="fLineWidth">The thickness of this circle.</param>
+            <param name="MMaterial">The material used to draw the circle.</param>
+            <param name="bUseWorldSpace">Should this circle use world space?</param>
+            <param name="nNumberOfSegments">The number of verticies of this circle.</param>
+        </member>
+        <member name="M:MW.HUD.Draw.DrawCircle(UnityEngine.GameObject,UnityEngine.Vector3,System.Single,UnityEngine.Color,System.Single,System.Boolean,System.Int32)">
+            <summary>Draws a circle with a centre at around at radius with a LineColour at LineWidth thickness at UseWorldSpace with NumberOfSegments.</summary>
+            <param name="GSelf">The GameObject calling this.</param>
+            <param name="vAround">The centre of the circle to be drawn.</param>
+            <param name="fRadius">The radius of this circle.</param>
+            <param name="colLineColour">The colour of this circle.</param>
+            <param name="fLineWidth">The thickness of this circle.</param>
+            <param name="bUseWorldSpace">Should this circle use world space?</param>
+            <param name="nNumberOfSegments">The number of verticies of this circle.</param>
+        </member>
+        <member name="M:MW.HUD.UI.ScaleSize(UnityEngine.Vector3,UnityEngine.Vector3)">
+            <summary>Scales the canvas element relative to self.</summary>
+            <param name="vSelf">The position to scale from.</param>
+            <param name="vScaleWith">The position to scale with.</param>
+            <returns>The relative scale size in Vector2.</returns>
+        </member>
+        <member name="M:MW.HUD.UI.TypewriterText(TMPro.TextMeshProUGUI,System.String,System.Single,MW.HUD.UI.Mode)">
+            <summary>Animates tmpTextMeshPro to display sContent like a typewriter.</summary>
+            <param name="tmpTextMeshPro">The text to animate.</param>
+            <param name="sContent">The content to display.</param>
+            <param name="fDelay">The time gap between writing a new letter.</param>
+            <param name="mMode">Should the text append, or clear?</param>
+        </member>
+        <member name="M:MW.HUD.UI.TypewriterText(TMPro.TextMeshProUGUI,System.String,System.Single,MW.HUD.UI.Mode,System.String)">
+            <summary>Animates tmpTextMeshPro to display sContent like a typewriter.</summary>
+            <param name="tmpTextMeshPro">The text to animate.</param>
+            <param name="sContent">The content to display.</param>
+            <param name="fDelay">The time gap between writing a new letter.</param>
+            <param name="mMode">Should the text append, or clear?</param>
+            <param name="sSound">The sound to play for every letter added on.</param>
+        </member>
+        <member name="F:MW.General.Common.kThousandth">
+            <summary>Shorthand for writing / 1000. (Always faster to multiply than to divide)</summary>
+        </member>
+        <member name="F:MW.General.Common.kHundreth">
+            <summary>Shorthand for writing / 100. (Always faster to multiply than to divide)</summary>
+        </member>
+        <member name="F:MW.General.Common.k10Percent">
+            <summary>Shorthand for writing / 10. (Always faster to multiply than to divide)</summary>
+        </member>
+        <member name="F:MW.General.Common.kQuarter">
+            <summary>Shorthand for writing / 4. (Always faster to multiply than to divide)</summary>
+        </member>
+        <member name="F:MW.General.Common.kHalf">
+            <summary>Shorthand for writing / 2. (Always faster to multiply than to divide)</summary>
+        </member>
+        <member name="F:MW.General.Common.kOneThird">
+            <summary>Shorthand for writing / 3. (Always faster to multiply than to divide)</summary>
+        </member>
+        <member name="F:MW.General.Common.kTwoThirds">
+            <summary>Shorthand for writing 1.6 recurring. (Always faster to multiply than to divide)</summary>
+        </member>
+        <member name="F:MW.General.Common.kPhi">
+            <summary>The golden ratio.</summary>
+        </member>
+        <member name="F:MW.General.Common.kE">
+            <summary>Euler's number. (e)</summary>
+        </member>
+        <member name="F:MW.General.Common.kSqrt2">
+            <summary>Shorthand for writing UnityEngine.Mathf.Sqrt(2). (Always faster to multiply than to divide)</summary>
+        </member>
+        <member name="F:MW.General.Common.kSqrt3">
+            <summary>Shorthand for writing UnityEngine.Mathf.Sqrt(3). (Always faster to multiply than to divide)</summary>
+        </member>
+        <member name="F:MW.General.Common.kInversePI">
+            <summary>Shorthand for writing 1 / Mathf.PI.</summary>
+        </member>
+        <member name="F:MW.General.Common.kHalfPI">
+            <summary>Shorthand for writing Mathf.PI * kHalf.</summary>
+        </member>
+        <member name="F:MW.General.Common.k1To255RGB">
+            <summary>The ratio between 1 and 255.</summary>
+        </member>
+        <member name="M:MW.General.Common.InFOV(MW.EDirection,UnityEngine.Transform,UnityEngine.Transform,System.Single)">
+            <summary>If self can see target within SearchAngle degrees while facing face.</summary>
+            <param name="dirFace">The direction self is facing.</param>
+            <param name="ASelf">The transform searching for target.</param>
+            <param name="ATarget">The transform to look out for.</param>
+            <param name="fSearchAngle">The maximum degrees to search for target.</param>
+        </member>
+        <member name="M:MW.General.Common.InFOV(MW.EDirection,UnityEngine.Transform,UnityEngine.Vector3,System.Single)">
+            <summary>If self can see target within SearchAngle degrees while facing face.</summary>
+            <param name="dirFace">The direction self is facing.</param>
+            <param name="ASelf">The transform searching for target.</param>
+            <param name="vTarget">The position to look out for.</param>
+            <param name="fSearchAngle">The maximum degrees to search for target.</param>
+        </member>
+        <member name="M:MW.General.Common.LineOfSight(UnityEngine.Vector3,UnityEngine.Vector3,UnityEngine.LayerMask)">
+            <summary>If self has an unobstructed line of sight to to.</summary>
+            <param name="vSelf">The position to look from.</param>
+            <param name="vTo">The position to look to.</param>
+            <param name="lmObstacles">The obstacles to consider obtrusive.</param>
+        </member>
+        <member name="M:MW.General.Common.LineOfSight(UnityEngine.Vector3,UnityEngine.Vector3)">
+            <summary>If self has an unobstructed line of sight to to.</summary>
+            <param name="vSelf">The position to look from.</param>
+            <param name="vTo">The position to look to.</param>
+        </member>
+        <member name="M:MW.General.Common.RoundToDP(System.Single,System.Int32)">
+            <summary>The fValue rounded to dp decimal places.</summary>
+             <param name="fValue">The value to be rounded.</param>
+             <param name="nDP">The decimal places to be included.</param>
+        </member>
+        <member name="M:MW.General.Common.FlipFlop(System.Boolean@)">
+            <summary>Flip-Flops Bool.</summary>
+            <param name="bBool"></param>
+        </member>
+        <member name="M:MW.General.Common.FlipFlop(System.Boolean@,System.Action,System.Action)">
+            <summary>Flip-Flops Bool.</summary>
+            <param name="bBool"></param>
+            <param name="ACallbackTrue">The method to call if the flip-flop is true.</param>
+            <param name="ACallbackFalse">The method to call if the flip-flop is false.</param>
+        </member>
+        <member name="M:MW.General.Common.IsWithin(System.Single,System.Single,System.Single)">
+            <summary>If value is within the +- limit of from.</summary>
+            <param name="fValue">The value to check.</param>
+            <param name="fFrom">The value to compare.</param>
+            <param name="fLimit">The limits to consider.</param>
+        </member>
+        <member name="M:MW.General.Common.Max(UnityEngine.Vector3,UnityEngine.Vector3)">
+            <summary>The largest vector between L and R, according to magnitude.</summary>
+            <param name="vL"></param>
+            <param name="vR"></param>
+        </member>
+        <member name="M:MW.General.Common.Min(UnityEngine.Vector3,UnityEngine.Vector3)">
+            <summary>The smallest vector vector between L and R, according to magnitude.</summary>
+            <param name="vL"></param>
+            <param name="vR"></param>
+        </member>
+        <member name="M:MW.General.Common.Fibonacci(System.Int32)">
+            <summary>Returns the n'th Fibonacci number.</summary>
+            <param name="n"></param>
+        </member>
+        <member name="M:MW.General.Common.GenerateEqualSphere(System.Int32,System.Single)">
+            <summary>Generates spherical points with an equal distribution.</summary>
+            <param name="nResolution">The number of points to generate.</param>
+            <param name="fGoldenRationModifier">Adjusts the golden ratio.</param>
+            <returns>The Vector3[] points for the sphere.</returns>
+        </member>
+        <member name="M:MW.General.Common.Bridge(UnityEngine.Vector3,UnityEngine.Vector3,System.Int32,System.Single)">
+            <summary>Generates the points to 'bridge' origin and target together at a height as an arc.</summary>
+            <param name="vOrigin">The starting point of the bridge.</param>
+            <param name="vTarget">The ending point of the bridge.</param>
+            <param name="nResolution">The number of points for the bridge.</param>
+            <param name="fHeight">The maximum height of the bridge.</param>
+            <returns>The Vector3[] points for the bridge.</returns>
+        </member>
+        <member name="T:MW.MArray`1">
+            <summary>A dynamic generic array built off of System.Collections.Generic.List.</summary>
+            <typeparam name="T">The generic type.</typeparam>
+        </member>
+        <member name="P:MW.MArray`1.Num">
+            <summary>The number of T in this MArray; the size.</summary>
+        </member>
+        <member name="M:MW.MArray`1.#ctor">
+            <summary>Initialises an MArray with the default settings.</summary>
+        </member>
+        <member name="M:MW.MArray`1.#ctor(System.Int32)">
+            <summary>Initialises an MArray with an initial capacity.</summary>
+            <param name="InitialSize">The number of elements this MArray will begin with.</param>
+        </member>
+        <member name="M:MW.MArray`1.Push(`0)">
+            <summary>Adds Item.</summary>
+            <param name="Item">The element to add.</param>
+        </member>
+        <member name="M:MW.MArray`1.Push(`0[])">
+            <summary>Adds Range of items.</summary>
+            <param name="Range">The list of elements to add.</param>
+        </member>
+        <member name="M:MW.MArray`1.Pull(`0)">
+            <summary>Removes Item.</summary>
+            <param name="Item">The element to remove.</param>
+            <returns>The new size of this MArray.</returns>
+        </member>
+        <member name="M:MW.MArray`1.Random">
+            <summary>Any element.</summary>
+            <returns>Any random element.</returns>
+        </member>
+        <member name="M:MW.MArray`1.First">
+            <returns>The item at the front of the queue.</returns>
+        </member>
+        <member name="M:MW.MArray`1.FirstPop">
+            <summary>Pops the item at the front of the queue.</summary>
+            <returns>The item at the front of the queue.</returns>
+        </member>
+        <member name="M:MW.MArray`1.Top">
+            <returns>The item at the top of the stack.</returns>
+        </member>
+        <member name="M:MW.MArray`1.TopPop">
+            <summary>Pops the item at the top of the stack.</summary>
+            <returns>The item at the top of the stack.</returns>
+        </member>
+        <member name="M:MW.MArray`1.InRange(System.Int32)">
+            <summary>Whether or not Index is within range.</summary>
+            <param name="Index">The Index to check for range.</param>
+            <returns>If Index is greater than or equal to zero and less than the number of elements.</returns>
+        </member>
+        <member name="M:MW.MArray`1.Contains(`0)">
+            <param name="Item">Item to check for existence.</param>
+            <returns>Whether the HashCode of Item exists within the internal Dictionary.</returns>
+        </member>
+        <member name="M:MW.MArray`1.Flush">
+            <summary>Clears this MArray.</summary>
+        </member>
+        <member name="M:MW.MArray`1.IsEmpty">
+            <returns>If this MArray is considered empty; Num == 0.</returns>
+        </member>
+        <member name="M:MW.MArray`1.Mirror(System.Int32)">
+            <returns>The mirror position of index over minimum zero, maximum Num.</returns>
+        </member>
+        <member name="M:MW.MArray`1.Mirror(System.Int32,System.Int32)">
+            <returns>The mirror position of index over Minimum, maximum Num.</returns>
+        </member>
+        <member name="M:MW.MArray`1.Reflect(System.Int32)">
+            <returns>The incoming and reflected Item of this mirror over minimum zero, maximum Num.</returns>
+        </member>
+        <member name="M:MW.MArray`1.Reflect(System.Int32,System.Int32)">
+            <returns>The incoming and reflected Item of this mirror of Minimum, maximum Num. First: The source reflection; Second: The reflected element.</returns>
+        </member>
+        <member name="M:MW.MArray`1.Reflect(System.Int32,System.Int32,`0@,`0@)">
+            <returns>The incoming and reflected Item of this mirror of Minimum, maximum Num.</returns>
+        </member>
+        <member name="P:MW.MArray`1.Item(System.Int32)">
+            <summary>Square bracket accessor.</summary>
+            <param name="i">The index to access T item.</param>
+            <returns>The Item at the specified index.</returns>
+        </member>
+        <member name="M:MW.MArray`1.op_LogicalNot(MW.MArray{`0})">
+            <summary>If this MArray is null or empty.</summary>
+            <param name="CheckIfNullOrEmpty">The MArray to check for null or emptiness.</param>
+            <returns>True if CheckIfNullOrEmpty is null or empty.</returns>
+        </member>
+        <member name="M:MW.MArray`1.op_Addition(MW.MArray{`0},MW.MArray{`0})">
+            <summary>Adds Right to the end of Left.</summary>
+            <param name="Left">The MArray to append to.</param>
+            <param name="Right">The MArray to append to Left.</param>
+            <returns>A contiguous MArray from Left to Right.</returns>
+            <exception cref="T:System.ArgumentNullException"></exception>
+        </member>
+        <member name="M:MW.MArray`1.op_BitwiseAnd(MW.MArray{`0},MW.MArray{`0})">
+            <summary>Left elements that exist in Right.</summary>
+            <param name="Left">The MArray to check AND.</param>
+            <param name="Right">The MArray to compare to.</param>
+            <returns>An MArray of Left elements that also exist in Right.</returns>
+            <exception cref="T:System.ArgumentNullException"></exception>
+        </member>
+        <member name="M:MW.MArray`1.op_ExclusiveOr(MW.MArray{`0},MW.MArray{`0})">
+            <summary>Left elements that do not exist in Right.</summary>
+            <param name="Left">The MArray to check OR.</param>
+            <param name="Right">The MArray to compare to.</param>
+            <returns>An MArray of Left's elements that do not exist in Right.</returns>
+            <exception cref="T:System.ArgumentNullException"></exception>
+        </member>
+        <member name="T:MW.TPair`2">
+            <summary>Generates a new pair of two types of values.</summary>
+            <typeparam name="TFirst">The type of the first variable to store.</typeparam>
+            <typeparam name="TSecond">The type of the second variable to store.</typeparam>
+        </member>
+        <member name="T:MW.TTriple`3">
+            <summary>Generates a new variable of three types of values.</summary>
+            <typeparam name="TFirst">The type of the first variable to store.</typeparam>
+            <typeparam name="TSecond">The type of the second variable to store.</typeparam>
+            <typeparam name="TThird">The type of the third variable to store.</typeparam>
+        </member>
+    </members>
+</doc>
