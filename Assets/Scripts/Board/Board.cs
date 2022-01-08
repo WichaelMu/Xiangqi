@@ -7,6 +7,7 @@ public class Board : MonoBehaviour
 {
 
 	public static Point[] board;
+	public BoardUI UI;
 
 	[Tooltip("The scale of the board.")] public float Scalar = 1;
 	public float InverseScalar { get { return 1 / Scalar; } }
@@ -16,6 +17,7 @@ public class Board : MonoBehaviour
 	Dictionary<byte, SpriteRenderer> byteToSprite;
 	static readonly Color Red = Colour.Colour255(190, 0, 0);
 	static readonly Color Green = Colour.Colour255(15, 100, 0);
+	public static Dictionary<Qi, Transform> InternalBoard;
 
 	void Awake()
 	{
@@ -40,6 +42,16 @@ public class Board : MonoBehaviour
 		byteToSprite.Clear();
 	}
 
+	public static Point At(int Index)
+	{
+		return board[Index];
+	}
+
+	public static void RegisterMove (Point from, Point to)
+	{
+		from.MoveOutbound(to);
+	}
+
 	void MakeBoard()
 	{
 		for (byte rank = 0; rank < 5; rank++)
@@ -58,7 +70,7 @@ public class Board : MonoBehaviour
 		}
 	}
 
-	byte DetermineStartingQis(byte file, byte rank)
+	Qi DetermineStartingQis(byte file, byte rank)
 	{
 		byte result = 0;
 
@@ -102,7 +114,7 @@ public class Board : MonoBehaviour
 			}
 			else
 			{
-				return Qi.None;
+				return Qi.Null;
 			}
 		}
 		else if (rank == 3)
@@ -113,34 +125,55 @@ public class Board : MonoBehaviour
 			}
 			else
 			{
-				return Qi.None;
+				return Qi.Null;
 			}
 		}
 		else
 		{
-			return Qi.None;
+			return Qi.Null;
 		}
 
-		return result;
+		return new Qi(result);
 	}
 
 	void SpawnQis()
 	{
+		if (InternalBoard == null)
+		{
+			InternalBoard = new Dictionary<Qi, Transform>();
+		}
+
 		foreach (Point p in board)
 		{
-			byte qi = p.GetQi();
+			byte qi = p.GetQiAsByte();
 			if (qi == Qi.None) { continue; }
+
+			SpriteRenderer newQi;
 
 			if (Qi.IsSlidingQi(qi) || Qi.IsMa(qi) || Qi.Type(qi) == Qi.T)
 			{
-				SpriteRenderer inGameQi = Instantiate(byteToSprite[Qi.Type(qi)], p.Position, Quaternion.identity);
-				inGameQi.color = Qi.Colour(qi) == Qi.R ? Red : Green;
+				newQi = Instantiate(byteToSprite[Qi.Type(qi)], p.Position, Quaternion.identity);
+				newQi.color = Qi.Colour(qi) == Qi.R ? Red : Green;
 			}
 			else
 			{
-				Instantiate(byteToSprite[qi], p.Position, Quaternion.identity);
+				newQi = Instantiate(byteToSprite[qi], p.Position, Quaternion.identity);
 			}
+
+			p.GetQi().SetTransform(newQi.transform);
 		}
+	}
+
+	public bool QiIsNotNone(int index, out byte qi)
+	{
+		byte qiBoard = board[index].GetQiAsByte();
+		
+		qi = qiBoard;
+
+
+		return (qiBoard != Qi.None)
+			? true
+			: false;
 	}
 
 	void OnDrawGizmos()
@@ -151,7 +184,7 @@ public class Board : MonoBehaviour
 			{
 				Point p = board[i];
 				Gizmos.DrawSphere(p.Position, .1f);
-				UnityEditor.Handles.Label(p.Position, (p.Position.y + " " + p.Position.x).ToString() + "\n" + p.GetQi().ToString() + "\n" + i);
+				UnityEditor.Handles.Label(p.Position, (p.Position.y + " " + p.Position.x).ToString() + "\n" + p.GetQiAsByte().ToString() + "\n" + i);
 			}
 		}
 	}

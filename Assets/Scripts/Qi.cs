@@ -1,7 +1,9 @@
-
+using System.Collections;
+using UnityEngine;
 
 public class Qi
 {
+	#region Bits
 	public const byte None = 0b00000000;
 
 	/*
@@ -65,4 +67,24 @@ public class Qi
 	{
 		return (In & Ma) == Ma;
 	}
+
+	#endregion
+
+	static readonly Qi NullQi = new Qi(Qi.None);
+	public static readonly Qi Null = NullQi;
+
+	byte BitIdentifier;
+	public Transform ReferenceTransform;
+
+	public Qi(byte id)
+	{
+		BitIdentifier = id;
+	}
+
+	public void SetTransform(Transform t)
+	{
+		ReferenceTransform = t;
+	}
+
+	public static implicit operator byte (Qi q) { return q.BitIdentifier; }
 }

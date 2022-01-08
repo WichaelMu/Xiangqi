@@ -236,6 +236,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9213f7f49633d2e42bb37cf2dd1d04db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  UI: {fileID: 531158019}
   Scalar: 9
   G: {fileID: 5249462556612239109, guid: 54bbba90c8f5bdc45a0dda417acad172, type: 3}
   M: {fileID: 726072996949111607, guid: 60efc1a89b4155440b5f3e2a6b224582, type: 3}
@@ -274,9 +275,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gridColour: {r: 0.7830189, g: 0.7830189, b: 0.7830189, a: 0}
-  gridXScalar: 0.25
-  gridYScalar: 0.25
+  Scalar: 0.1
   defaultMaterial: {fileID: 2100000, guid: a5beb80558c627941adc9377e4083617, type: 2}
+  legalMarker: {fileID: 809954327261399461, guid: 34e52a2def19cfb46b210116771a08d0, type: 3}
 --- !u!1 &1897105675
 GameObject:
   m_ObjectHideFlags: 0
@@ -307,6 +308,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   board: {fileID: 531158017}
+  boardUI: {fileID: 531158019}
 --- !u!4 &1897105677
 Transform:
   m_ObjectHideFlags: 0

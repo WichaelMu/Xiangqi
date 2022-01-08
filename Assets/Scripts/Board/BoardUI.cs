@@ -8,13 +8,19 @@ public class BoardUI : MonoBehaviour
 	[SerializeField] Color gridColour;
 	[SerializeField] float Scalar = .1f;
 	[SerializeField] Material defaultMaterial;
+	[SerializeField] SpriteRenderer legalMarker;
 
 	Board attached;
+	MArray<Point> Highlighted;
+	MArray<SpriteRenderer> highlightedLegal;
+
 	const byte Depth = 1;
 
 	void Start()
 	{
 		attached = GetComponent<Board>();
+		float markerScsale = attached.Scalar * .5f;
+		legalMarker.transform.localScale = new Vector3(markerScsale, markerScsale, 0);
 
 		MakeGrid();
 	}
@@ -168,6 +174,33 @@ public class BoardUI : MonoBehaviour
 
 	public void HighlightIntersections(MArray<Point> legal)
 	{
+		Highlighted = legal;
+		Highlight(true);
+	}
 
+	public void HideHighlightedIntersections()
+	{
+		Highlight(false);
+		Highlighted.Flush();
+	}
+
+	void Highlight(bool show)
+	{
+		if (show)
+		{
+			highlightedLegal = new MArray<SpriteRenderer>();
+			for (int i = 0; i < Highlighted.Num; ++i)
+			{
+				Point pointToInstantiate = Highlighted[i];
+				highlightedLegal.Push(Instantiate(legalMarker, pointToInstantiate.Position, Quaternion.identity));
+			}
+		}
+		else
+		{
+			while (!highlightedLegal.IsEmpty())
+			{
+				Destroy(highlightedLegal.FirstPop().gameObject);
+			}
+		}
 	}
 }
