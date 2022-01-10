@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
-using MW.General;
+using MW;
 using MW.Conversion;
 
 public class Board : MonoBehaviour
@@ -42,14 +42,26 @@ public class Board : MonoBehaviour
 		byteToSprite.Clear();
 	}
 
+	/// <param name="Index">The index at <see cref="Board.board"/> to check.</param>
+	/// <returns>The Point at Index.</returns>
 	public static Point At(int Index)
 	{
 		return board[Index];
 	}
 
+	/// <summary>Registers a move from to on <see cref="Board.board"/></summary>
+	/// <param name="from">The departing Point.</param>
+	/// <param name="to">The destination Point.</param>
 	public static void RegisterMove (Point from, Point to)
 	{
 		from.MoveOutbound(to);
+	}
+
+	/// <param name="Index">The index to for validity.</param>
+	/// <returns>If Index is >= 0 &amp;&amp; &lt; 90.</returns>
+	public static bool IsValid(int Index)
+	{
+		return Index >= 0 && Index < 90;
 	}
 
 	void MakeBoard()
@@ -61,8 +73,8 @@ public class Board : MonoBehaviour
 				int Position = rank * 9 + file;
 				board[Position] = new Point(new Vector2(file * Scalar, rank * Scalar), DetermineStartingQis(file, rank), Position);
 
-				byte MirroredRank = (byte)(Common.MirrorNumber(rank, 0, 9));
-				byte MirroredFile = (byte)(Common.MirrorNumber(file, 0, 8));
+				byte MirroredRank = (byte)(Utils.MirrorNumber(rank, 0, 9));
+				byte MirroredFile = (byte)(Utils.MirrorNumber(file, 0, 8));
 				byte MirroredPosition = (byte)(MirroredRank * 9 + MirroredFile);
 
 				board[MirroredPosition] = new Point(new Vector2(MirroredFile * Scalar, MirroredRank * Scalar), DetermineStartingQis(MirroredFile, MirroredRank), MirroredPosition);
@@ -164,12 +176,14 @@ public class Board : MonoBehaviour
 		}
 	}
 
+	/// <param name="index">The index to check for <see cref="Qi.None"/></param>
+	/// <param name="qi">The out byte of the qi at index, regardless of if it equals to <see cref="Qi.None"/></param>
+	/// <returns>True if the qi at index is NOT <see cref="Qi.None"/></returns>
 	public bool QiIsNotNone(int index, out byte qi)
 	{
 		byte qiBoard = board[index].GetQiAsByte();
 		
 		qi = qiBoard;
-
 
 		return (qiBoard != Qi.None)
 			? true
