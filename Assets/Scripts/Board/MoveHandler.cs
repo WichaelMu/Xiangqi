@@ -12,7 +12,7 @@ public class MoveHandler
 	static readonly int[] Ma = new int[] { 11, -7, 19, 17, -11, 7, -19, -17, };
 
 	/// <summary>All legal moves on <see cref="Board.board"/> for <see cref="Qi.T"/>.</summary>
-	static readonly HashSet<int> TLegality = new HashSet<int> { 3, 5, 13, 21, 23, 56, 58, 76, 84, 86 };
+	static readonly HashSet<int> TLegality = new HashSet<int> { 3, 5, 13, 21, 23, 66, 68, 76, 84, 86 };
 	/// <summary>All legal moves on <see cref="Board.board"/> for <see cref="Qi.Goong"/>.</summary>
 	static readonly HashSet<int> GoongLegality = new HashSet<int> { 3, 4, 5, 12, 13, 14, 21, 22, 23, 56, 57, 58, 75, 76, 77, 84, 85, 86 };
 
