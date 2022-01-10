@@ -18,33 +18,74 @@ public class Player : MonoBehaviour
 	MArray<Point> legalMoves;
 	bool bHasQiSelected = false;
 
+	byte currentPlayer = Qi.R;
+
+	[Header("Capture Settings")]
+	[SerializeField] float capturedPositionsOffsetFromCentre = 10;
+	[SerializeField] Transform capturedQisGre;
+	[SerializeField] Transform capturedQisRed;
+	[SerializeField] Vector3 capturedQisOffset;
+
 	void Start()
 	{
 		_camera = Camera.main;
 
 		inverseScalar = board.InverseScalar;
+
+		float boardHeight = board.Scalar * 9;
+		capturedQisGre.position = new Vector2(-capturedPositionsOffsetFromCentre, boardHeight);
+		capturedQisRed.position = new Vector2(board.Scalar * 8 + capturedPositionsOffsetFromCentre, boardHeight);
 	}
 
 	void Update()
 	{
+		// No qi selected.
 		if (!bHasQiSelected)
 		{
+			// Clicked on a valid Point.
 			if (IsPointUnderMouseValid(out Point pointUnderMouse))
 			{
-				legalMoves = MoveHandler.Handle(board, pointUnderMouse);
-				boardUI.HighlightIntersections(legalMoves);
+				byte qiColour = Qi.Colour(pointUnderMouse.GetQiAsByte());
 
-				bHasQiSelected = true;
+				if (qiColour == currentPlayer)
+				{
+					legalMoves = MoveHandler.Handle(board, pointUnderMouse);
+					boardUI.HighlightIntersections(legalMoves);
+
+					bHasQiSelected = true;
+				}
 			}
 		}
-		else
+		else // Has a qi selected.
 		{
+			// Clicked on a valid Point. Legal defined by legalMoves.
 			if (IsPointUnderMouseValid(out Point pointUnderMouse))
 			{
+				// A move is made here.
 				if (legalMoves.Contains(pointUnderMouse) && pointUnderMouse != legalMoves[0])
 				{
+					if (board.QiIsNotNone(pointUnderMouse.Index, out byte _))
+					{
+						if (currentPlayer == Qi.R)
+						{
+							Move(pointUnderMouse.GetQiTransform(), capturedQisRed.position);
+							capturedQisRed.position -= capturedQisOffset;
+						}
+						else
+						{
+							Move(pointUnderMouse.GetQiTransform(), capturedQisGre.position);
+							capturedQisGre.position -= capturedQisOffset;
+						}
+					}
+
+					// Immediately move the selected qi to the pointUnderMouse. In memory only, not visual.
 					Board.RegisterMove(legalMoves[0], pointUnderMouse);
+
+					// Move the selected qi to the pointUnderMouse. Visually only, not memory.
 					Move(pointUnderMouse.GetQiTransform(), pointUnderMouse);
+
+					// After everything is done, end the turn.
+					EndTurn(ref currentPlayer);
 				}
 
 				bHasQiSelected = false;
@@ -56,7 +97,7 @@ public class Player : MonoBehaviour
 	}
 
 	/// <param name="pointUnderMouse">The <see cref="out"/> parameter of the <see cref="Point"/> under the Mouse, regardless if there is a <see cref="Point"/></param>
-	/// <returns><see cref="true"/> if there is a <see cref="Point"/>under the Mouse. Outs the <see cref="Point"/> under the Mouse if <see cref="true"/>, <see cref="null"/> otherwise.</returns>
+	/// <returns><see cref="true"/> if there is a <see cref="Point"/> under the Mouse. Outs the <see cref="Point"/> under the Mouse if <see cref="true"/>, otherwise <see cref="null"/>.</returns>
 	bool IsPointUnderMouseValid(out Point pointUnderMouse)
 	{
 		if (I.Click(EButton.LeftMouse, false, true))
@@ -120,4 +161,16 @@ public class Player : MonoBehaviour
 	}
 
 	#endregion
+
+	void EndTurn(ref byte player)
+	{
+		if (player == Qi.R)
+		{
+			player = Qi.G;
+		}
+		else
+		{
+			player = Qi.R;
+		}
+	}
 }
