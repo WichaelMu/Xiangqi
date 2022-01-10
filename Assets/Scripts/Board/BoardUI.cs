@@ -189,7 +189,7 @@ public class BoardUI : MonoBehaviour
 		if (show)
 		{
 			highlightedLegal = new MArray<SpriteRenderer>();
-			for (int i = 0; i < Highlighted.Num; ++i)
+			for (int i = 1; i < Highlighted.Num; ++i)
 			{
 				Point pointToInstantiate = Highlighted[i];
 				highlightedLegal.Push(Instantiate(legalMarker, pointToInstantiate.Position, Quaternion.identity));
