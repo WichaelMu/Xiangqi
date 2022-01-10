@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using MW;
 using MW.Diagnostics;
 
+/// <summary>Determines the legal moves for a given <see cref="Qi"/> using <see cref="Handle(Board, Point)"/>.</summary>
 public class MoveHandler
 {
 	delegate bool Rule(int origin, int offset, byte colour, Board board = null);
@@ -10,9 +11,9 @@ public class MoveHandler
 	static readonly int[] Diagonal = new int[] { 10, 8, -10, -8 };
 	static readonly int[] Ma = new int[] { 11, -7, 19, 17, -11, 7, -19, -17, };
 
-	/// <summary>All legal moves on <see cref="Board.board"/> for <see cref="Qi.T"/></summary>
+	/// <summary>All legal moves on <see cref="Board.board"/> for <see cref="Qi.T"/>.</summary>
 	static readonly HashSet<int> TLegality = new HashSet<int> { 3, 5, 13, 21, 23, 56, 58, 76, 84, 86 };
-	/// <summary>All legal moves on <see cref="Board.board"/> for <see cref="Qi.Goong"/></summary>
+	/// <summary>All legal moves on <see cref="Board.board"/> for <see cref="Qi.Goong"/>.</summary>
 	static readonly HashSet<int> GoongLegality = new HashSet<int> { 3, 4, 5, 12, 13, 14, 21, 22, 23, 56, 57, 58, 75, 76, 77, 84, 85, 86 };
 
 	/// <summary>Handles legal movements, relative to the qi on origin.</summary>
@@ -21,30 +22,28 @@ public class MoveHandler
 	/// <returns>Legal moves.</returns>
 	public static MArray<Point> Handle(Board board, Point origin)
 	{
-		MArray<Point> handled = new MArray<Point>();
-
 		byte qi = origin.GetQiAsByte();
 		byte colour = Qi.Colour(qi);
 		byte type = Qi.Type(qi);
 
 		if (Qi.IsSlidingQi(qi))
 		{
-			handled = SlidingQi(board, origin.Index, colour, type);
+			return SlidingQi(board, origin.Index, colour, type);
 		}
 		else if (Qi.IsDiagonalQi(qi))
 		{
-			handled = DiagonalQi(board, origin.Index, colour, type);
+			return DiagonalQi(board, origin.Index, colour, type);
 		}
 		else if (Qi.IsXutOrGoong(qi))
 		{
-			handled = SingleMoveQi(board, origin.Index, colour, type);
+			return SingleMoveQi(board, origin.Index, colour, type);
 		}
 		else if (Qi.IsMa(qi))
 		{
-			handled = MaQi(board, origin.Index, colour);
+			return MaQi(board, origin.Index, colour);
 		}
 
-		return handled;
+		return new MArray<Point>();
 	}
 
 	/// <summary>The initial call for legal moves on any sliding qi.</summary>
