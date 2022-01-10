@@ -1,6 +1,5 @@
 using System.Collections;
 using UnityEngine;
-using MW.General;
 using MW;
 using MW.IO;
 using MW.Diagnostics;
@@ -9,8 +8,10 @@ public class Player : MonoBehaviour
 {
 	Camera _camera;
 
+#pragma warning disable IDE0044
 	[SerializeField] Board board;
 	[SerializeField] BoardUI boardUI;
+#pragma warning restore IDE0044
 
 	float inverseScalar = 1;
 
@@ -40,10 +41,10 @@ public class Player : MonoBehaviour
 		{
 			if (IsPointUnderMouseValid(out Point pointUnderMouse))
 			{
-				if (legalMoves.Contains(pointUnderMouse))
+				if (legalMoves.Contains(pointUnderMouse) && pointUnderMouse != legalMoves[0])
 				{
 					Board.RegisterMove(legalMoves[0], pointUnderMouse);
-					Move(pointUnderMouse.GetQi().ReferenceTransform, pointUnderMouse);
+					Move(pointUnderMouse.GetQiTransform(), pointUnderMouse);
 				}
 
 				bHasQiSelected = false;
@@ -54,6 +55,8 @@ public class Player : MonoBehaviour
 
 	}
 
+	/// <param name="pointUnderMouse">The <see cref="out"/> parameter of the <see cref="Point"/> under the Mouse, regardless if there is a <see cref="Point"/></param>
+	/// <returns><see cref="true"/> if there is a <see cref="Point"/>under the Mouse. Outs the <see cref="Point"/> under the Mouse if <see cref="true"/>, <see cref="null"/> otherwise.</returns>
 	bool IsPointUnderMouseValid(out Point pointUnderMouse)
 	{
 		if (I.Click(EButton.LeftMouse, false, true))

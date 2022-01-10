@@ -9,6 +9,7 @@ public class Point
 
 	Qi qi;
 
+	/// <summary>The <see cref="Board"/> index of this Point.</summary>
 	public int Index = 0;
 
 	public Point(Vector2 Position, Qi Qi, int Index)
@@ -18,14 +19,22 @@ public class Point
 		this.Index = Index;
 	}
 
+	/// <returns>This qi as a <see cref="byte"/>, representing it's colour AND type.</returns>
 	public byte GetQiAsByte()
 	{
 		return (byte)qi;
 	}
 
+	/// <returns>This qi as a <see cref="Qi"/> <see cref="object"/>.</returns>
 	public Qi GetQi()
 	{
 		return qi;
+	}
+
+	/// <returns>The <see cref="Transform"/> associated with this qi.</returns>
+	public Transform GetQiTransform()
+	{
+		return qi.ReferenceTransform;
 	}
 
 	public void MoveOutbound (Point destination)
