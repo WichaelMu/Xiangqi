@@ -2,6 +2,7 @@ using System.Collections;
 using UnityEngine;
 using MW;
 using MW.IO;
+using MW.Easing;
 using MW.Diagnostics;
 
 public class Player : MonoBehaviour
@@ -125,7 +126,7 @@ public class Player : MonoBehaviour
 
 	#region Movement
 
-	const float kTimeToInterpolate = .25f;
+	const float kTimeToInterpolate = .55f;
 	const float kInverseInterpolationTime = 1 / kTimeToInterpolate;
 
 	public void Move(Transform t, Point final)
@@ -141,10 +142,10 @@ public class Player : MonoBehaviour
 	IEnumerator MoveTo(Transform qi, Point final)
 	{
 		float t = 0;
-		while (t <= 1)
+		while (t <= 2)
 		{
 			t += Time.deltaTime * kInverseInterpolationTime;
-			qi.position = Vector2.Lerp(qi.position, final.Position, t);
+			qi.position = Vector2.Lerp(qi.position, final.Position, Interpolate.Ease(EEquation.EaseInSine, 0, 1, t));
 			yield return null;
 		}
 	}
