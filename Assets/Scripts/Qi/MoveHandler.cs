@@ -188,12 +188,14 @@ public class MoveHandler
 
 	static bool AttemptedTraversalToFurtherLeftOrRight(int origin, int afterOffset)
 	{
+		int originModNine = origin % 9;
+
 		// For any case if origin is not on the left side.
-		if (origin % 9 != 0)
+		if (originModNine != 0)
 		{
 			// If the origin was on the right of the board ( % 9 == 8 ) &&
 			// the offset will put origin on the left of the board, exit.
-			if (origin % 9 == 8 && afterOffset % 9 == 0)
+			if (originModNine == 8 && afterOffset % 9 == 0)
 			{
 				return true;
 			}
@@ -294,6 +296,9 @@ public class MoveHandler
 
 			do
 			{
+				if (AttemptedTraversalToFurtherLeftOrRight(tempOrigin, tempOrigin + offset))
+					break;
+
 				tempOrigin += offset;
 
 				if (tempOrigin > 89 || tempOrigin < 0)
@@ -308,9 +313,6 @@ public class MoveHandler
 
 					bFoundSomething = true;
 				}
-
-				if (AttemptedTraversalToFurtherLeftOrRight(tempOrigin, tempOrigin + offset))
-					break;
 
 			} while (!bFoundSomething);
 
