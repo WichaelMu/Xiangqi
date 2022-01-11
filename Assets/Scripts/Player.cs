@@ -110,7 +110,7 @@ public class Player : MonoBehaviour
 			// Mark qi for selection.
 			if (xb >= 0 && xb <= 9 && yb >= 0 && yb <= 10)
 			{
-				pointUnderMouse = Board.At(yb * 9 + xb);
+				pointUnderMouse = board.At(yb * 9 + xb);
 				return true;
 			}
 		}

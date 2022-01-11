@@ -5,8 +5,7 @@ using MW.Conversion;
 
 public class Board : MonoBehaviour
 {
-
-	public static Point[] board;
+	public Point[] board;
 	public BoardUI UI;
 
 	[Tooltip("The scale of the board.")] public float Scalar = 1;
@@ -44,7 +43,7 @@ public class Board : MonoBehaviour
 
 	/// <param name="Index">The index at <see cref="Board.board"/> to check.</param>
 	/// <returns>The Point at Index.</returns>
-	public static Point At(int Index)
+	public Point At(int Index)
 	{
 		return board[Index];
 	}

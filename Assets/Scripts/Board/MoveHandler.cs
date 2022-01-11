@@ -159,7 +159,7 @@ public class MoveHandler
 		if (origin > 89 || origin < 0 || depth == 0)
 			return;
 
-		legal.Push(Board.At(origin));
+		legal.Push(board.At(origin));
 
 		// If reached another qi, exit.
 		if (board.QiIsNotNone(origin, out byte qi) && depth != depthToBeginWith)
@@ -303,7 +303,7 @@ public class MoveHandler
 				{
 					if (Qi.Colour(qi) != colour)
 					{
-						legal.Push(Board.At(tempOrigin));
+						legal.Push(board.At(tempOrigin));
 					}
 
 					bFoundSomething = true;
@@ -317,7 +317,7 @@ public class MoveHandler
 			return;
 		}
 
-		legal.Push(Board.At(origin));
+		legal.Push(board.At(origin));
 
 		if (AttemptedTraversalToFurtherLeftOrRight(origin, origin + offset))
 			return;
@@ -362,7 +362,7 @@ public class MoveHandler
 		}
 
 		// Register this Ma's position as legal, so that Player.Move Move works.
-		legal.Push(Board.At(origin));
+		legal.Push(board.At(origin));
 
 		foreach (int offset in offsets)
 		{
@@ -378,7 +378,7 @@ public class MoveHandler
 				if (Qi.Colour(qi) == colour)
 					continue;
 
-			legal.Push(Board.At(afterOffset));
+			legal.Push(board.At(afterOffset));
 		}
 	}
 }

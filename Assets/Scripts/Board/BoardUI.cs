@@ -43,8 +43,8 @@ public class BoardUI : MonoBehaviour
 		{
 			GameObject newGridLine = MakeNewGridMarker(Horizontal);
 
-			Vector2 left = Board.board[i].Position;
-			Vector2 right = Board.board[i + 8].Position;
+			Vector2 left = attached.board[i].Position;
+			Vector2 right = attached.board[i + 8].Position;
 
 			Vector3 bottomLeftShared = new Vector3(left.x, left.y - Scalar, Depth);
 			Vector3 topRightShared = new Vector3(right.x, right.y + Scalar, Depth);
@@ -85,8 +85,8 @@ public class BoardUI : MonoBehaviour
 			// Left and right edges.
 			if (i == 0 || i == 8)
 			{
-				bottom = Board.board[i].Position;
-				top = Board.board[i + 81].Position;
+				bottom = attached.board[i].Position;
+				top = attached.board[i + 81].Position;
 
 				MakeVerticalLine(bottom, top, out mesh, ref vertices, ref triangles);
 
@@ -94,8 +94,8 @@ public class BoardUI : MonoBehaviour
 			}
 			else // Everything else in between is split.
 			{
-				bottom = Board.board[i].Position;
-				top = Board.board[i + 36].Position;
+				bottom = attached.board[i].Position;
+				top = attached.board[i + 36].Position;
 
 				MakeVerticalLine(bottom, top, out mesh, ref vertices, ref triangles);
 
@@ -103,8 +103,8 @@ public class BoardUI : MonoBehaviour
 
 				newGridLine = MakeNewGridMarker(Vertical);
 
-				bottom = Board.board[i + 45].Position;
-				top = Board.board[i + 36 + 45].Position;
+				bottom = attached.board[i + 45].Position;
+				top = attached.board[i + 36 + 45].Position;
 
 				MakeVerticalLine(bottom, top, out mesh, ref vertices, ref triangles);
 
@@ -112,13 +112,13 @@ public class BoardUI : MonoBehaviour
 			}
 		}
 
-		MakeVerticalLine(Board.board[3].Position, Board.board[23].Position, out mesh, ref vertices, ref triangles);
+		MakeVerticalLine(attached.board[3].Position, attached.board[23].Position, out mesh, ref vertices, ref triangles);
 		SetMeshData(MakeNewGridMarker(Diagonal), mesh);
-		MakeVerticalLine(Board.board[5].Position, Board.board[21].Position, out mesh, ref vertices, ref triangles);
+		MakeVerticalLine(attached.board[5].Position, attached.board[21].Position, out mesh, ref vertices, ref triangles);
 		SetMeshData(MakeNewGridMarker(Diagonal), mesh);
-		MakeVerticalLine(Board.board[66].Position, Board.board[86].Position, out mesh, ref vertices, ref triangles);
+		MakeVerticalLine(attached.board[66].Position, attached.board[86].Position, out mesh, ref vertices, ref triangles);
 		SetMeshData(MakeNewGridMarker(Diagonal), mesh);
-		MakeVerticalLine(Board.board[68].Position, Board.board[84].Position, out mesh, ref vertices, ref triangles);
+		MakeVerticalLine(attached.board[68].Position, attached.board[84].Position, out mesh, ref vertices, ref triangles);
 		SetMeshData(MakeNewGridMarker(Diagonal), mesh);
 	}
 
