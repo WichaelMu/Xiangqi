@@ -305,9 +305,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gridColour: {r: 0.7830189, g: 0.7830189, b: 0.7830189, a: 0}
-  Scalar: 0.1
+  gridScale: 0.1
   defaultMaterial: {fileID: 2100000, guid: a5beb80558c627941adc9377e4083617, type: 2}
-  legalMarker: {fileID: 809954327261399461, guid: 34e52a2def19cfb46b210116771a08d0, type: 3}
+  legalMarker: {fileID: 809954327261399461, guid: 17107af4c6408d843897f0ee037ed0fe, type: 3}
+  aBitBigger: 0.5
+  defaultColour: {r: 1, g: 0.5882353, b: 0, a: 1}
+  captureColour: {r: 1, g: 1, b: 1, a: 1}
+  captureLegalMarkerScale: {x: 0, y: 0, z: 0}
 --- !u!1 &1100327884
 GameObject:
   m_ObjectHideFlags: 0
@@ -348,6 +352,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1897105677}
   - component: {fileID: 1897105676}
+  - component: {fileID: 1897105678}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -389,3 +394,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1897105678
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1897105675}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1ad6a703ceb1bc449e3ff0ebc0c6095, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  previousMoveMarker: {fileID: 8128776849713302904, guid: 54f268625cd35b74299ae3572d1c6945, type: 3}
+  previousColourFrom: {r: 0.28773582, g: 0.7269042, b: 1, a: 1}
+  previousColourTo: {r: 0, g: 0.31684136, b: 1, a: 1}

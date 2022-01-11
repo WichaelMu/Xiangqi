@@ -6,21 +6,26 @@ public class BoardUI : MonoBehaviour
 {
 
 	[SerializeField] Color gridColour;
-	[SerializeField] float Scalar = .1f;
+	[SerializeField] float gridScale = .1f;
 	[SerializeField] Material defaultMaterial;
 	[SerializeField] SpriteRenderer legalMarker;
+	[SerializeField, Min(Vector3.kEpsilon)] float aBitBigger = .1f;
+	[SerializeField] Color defaultColour;
+	[SerializeField] Color captureColour;
 
 	Board attached;
 	MArray<Point> Highlighted;
 	MArray<SpriteRenderer> highlightedLegal;
+	[HideInInspector] public Vector3 captureLegalMarkerScale;
 
 	const byte Depth = 1;
 
-	void Start()
+	void Awake()
 	{
 		attached = GetComponent<Board>();
-		float markerScsale = attached.Scalar * .5f;
-		legalMarker.transform.localScale = new Vector3(markerScsale, markerScsale, 0);
+		float markerScale = attached.Scalar * .5f;
+		legalMarker.transform.localScale = new Vector3(markerScale, markerScale, 0);
+		captureLegalMarkerScale = new Vector3(markerScale, markerScale, 0) * (1 + aBitBigger);
 
 		MakeGrid();
 	}
@@ -46,16 +51,16 @@ public class BoardUI : MonoBehaviour
 			Vector2 left = attached.board[i].Position;
 			Vector2 right = attached.board[i + 8].Position;
 
-			Vector3 bottomLeftShared = new Vector3(left.x, left.y - Scalar, Depth);
-			Vector3 topRightShared = new Vector3(right.x, right.y + Scalar, Depth);
+			Vector3 bottomLeftShared = new Vector3(left.x, left.y - gridScale, Depth);
+			Vector3 topRightShared = new Vector3(right.x, right.y + gridScale, Depth);
 
 			int k = 0;
 			vertices[k] = bottomLeftShared;
-			vertices[k + 1] = new Vector3(left.x, left.y + Scalar, Depth);
+			vertices[k + 1] = new Vector3(left.x, left.y + gridScale, Depth);
 			vertices[k + 2] = topRightShared;
 
 			vertices[k + 3] = topRightShared;
-			vertices[k + 4] = new Vector3(right.x, right.y - Scalar, Depth);
+			vertices[k + 4] = new Vector3(right.x, right.y - gridScale, Depth);
 			vertices[k + 5] = bottomLeftShared;
 
 			for (int o = 0; o < 6; o += 3)
@@ -126,9 +131,9 @@ public class BoardUI : MonoBehaviour
 	{
 		mesh = new Mesh();
 
-		Vector3 leftBottomShared = new Vector3(p1.x - Scalar, p1.y, Depth);
-		Vector3 leftTopShared = new Vector3(p2.x - Scalar, p2.y, Depth);
-		Vector3 rightBottomShared = new Vector3(p1.x + Scalar, p1.y, Depth);
+		Vector3 leftBottomShared = new Vector3(p1.x - gridScale, p1.y, Depth);
+		Vector3 leftTopShared = new Vector3(p2.x - gridScale, p2.y, Depth);
+		Vector3 rightBottomShared = new Vector3(p1.x + gridScale, p1.y, Depth);
 
 		int k = 0;
 		vertices[k] = leftBottomShared;
@@ -136,7 +141,7 @@ public class BoardUI : MonoBehaviour
 		vertices[k + 2] = rightBottomShared;
 
 		vertices[k + 3] = leftTopShared;
-		vertices[k + 4] = new Vector3(p2.x + Scalar, p2.y, Depth);
+		vertices[k + 4] = new Vector3(p2.x + gridScale, p2.y, Depth);
 		vertices[k + 5] = rightBottomShared;
 
 		for (int o = 0; o < 6; o += 3)
@@ -193,6 +198,17 @@ public class BoardUI : MonoBehaviour
 			{
 				Point pointToInstantiate = Highlighted[i];
 				highlightedLegal.Push(Instantiate(legalMarker, pointToInstantiate.Position, Quaternion.identity));
+				SpriteRenderer sprLegalMarker = highlightedLegal[highlightedLegal.Num - 1];
+
+				if (Qi.Colour(pointToInstantiate.GetQiAsByte()) != 0)
+				{
+					sprLegalMarker.color = captureColour;
+					sprLegalMarker.transform.localScale = captureLegalMarkerScale;
+				}
+				else
+				{
+					sprLegalMarker.color = defaultColour;
+				}
 			}
 		}
 		else

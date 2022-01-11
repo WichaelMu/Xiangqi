@@ -2,16 +2,17 @@ using System.Collections;
 using UnityEngine;
 using MW;
 using MW.IO;
-using MW.Easing;
 using MW.Diagnostics;
 
+[RequireComponent(typeof(PlayerUI))]
 public class Player : MonoBehaviour
 {
 	Camera _camera;
 
 #pragma warning disable IDE0044
-	[SerializeField] Board board;
+	public Board board;
 	[SerializeField] BoardUI boardUI;
+	PlayerUI ui;
 #pragma warning restore IDE0044
 
 	float inverseScalar = 1;
@@ -36,6 +37,8 @@ public class Player : MonoBehaviour
 		float boardHeight = board.Scalar * 9;
 		capturedQisGre.position = new Vector2(-capturedPositionsOffsetFromCentre, boardHeight);
 		capturedQisRed.position = new Vector2(board.Scalar * 8 + capturedPositionsOffsetFromCentre, boardHeight);
+
+		ui = GetComponent<PlayerUI>();
 	}
 
 	void Update()
@@ -69,12 +72,12 @@ public class Player : MonoBehaviour
 					{
 						if (currentPlayer == Qi.R)
 						{
-							Move(pointUnderMouse.GetQiTransform(), capturedQisRed.position);
+							ui.Move(pointUnderMouse.GetQiTransform(), capturedQisRed.position);
 							capturedQisRed.position -= capturedQisOffset;
 						}
 						else
 						{
-							Move(pointUnderMouse.GetQiTransform(), capturedQisGre.position);
+							ui.Move(pointUnderMouse.GetQiTransform(), capturedQisGre.position);
 							capturedQisGre.position -= capturedQisOffset;
 						}
 					}
@@ -83,7 +86,10 @@ public class Player : MonoBehaviour
 					Board.RegisterMove(legalMoves[0], pointUnderMouse);
 
 					// Move the selected qi to the pointUnderMouse. Visually only, not memory.
-					Move(pointUnderMouse.GetQiTransform(), pointUnderMouse);
+					ui.Move(pointUnderMouse.GetQiTransform(), pointUnderMouse);
+
+					// Mark this move as the previous move.
+					ui.HighlightPreviousMove(legalMoves[0], pointUnderMouse);
 
 					// After everything is done, end the turn.
 					EndTurn(ref currentPlayer);
@@ -123,45 +129,6 @@ public class Player : MonoBehaviour
 	{
 		return Mathf.RoundToInt((int)(System.Math.Round(In * inverseScalar, System.MidpointRounding.AwayFromZero) * Scalar) * inverseScalar);
 	}
-
-	#region Movement
-
-	const float kTimeToInterpolate = .55f;
-	const float kInverseInterpolationTime = 1 / kTimeToInterpolate;
-
-	public void Move(Transform t, Point final)
-	{
-		StartCoroutine(MoveTo(t, final));
-	}
-
-	public void Move(Transform t, Vector2 final)
-	{
-		StartCoroutine(MoveTo(t, final));
-	}
-
-	IEnumerator MoveTo(Transform qi, Point final)
-	{
-		float t = 0;
-		while (t <= 2)
-		{
-			t += Time.deltaTime * kInverseInterpolationTime;
-			qi.position = Vector2.Lerp(qi.position, final.Position, Interpolate.Ease(EEquation.EaseInSine, 0, 1, t));
-			yield return null;
-		}
-	}
-
-	IEnumerator MoveTo(Transform qi, Vector2 final)
-	{
-		float t = 0;
-		while (t <= 1)
-		{
-			t += Time.deltaTime * kInverseInterpolationTime;
-			qi.position = Vector2.Lerp(qi.position, final, t);
-			yield return null;
-		}
-	}
-
-	#endregion
 
 	void EndTurn(ref byte player)
 	{
