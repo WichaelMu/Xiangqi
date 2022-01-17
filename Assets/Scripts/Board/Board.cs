@@ -16,7 +16,8 @@ public class Board : MonoBehaviour
 	Dictionary<byte, SpriteRenderer> byteToSprite;
 	static readonly Color Red = Colour.Colour255(190, 0, 0);
 	static readonly Color Green = Colour.Colour255(15, 100, 0);
-	public static Dictionary<Qi, Transform> InternalBoard;
+	public Dictionary<Qi, Point> InternalBoardR;
+	public Dictionary<Qi, Point> InternalBoardG;
 
 	void Awake()
 	{
@@ -51,8 +52,25 @@ public class Board : MonoBehaviour
 	/// <summary>Registers a move from to on <see cref="Board.board"/></summary>
 	/// <param name="from">The departing Point.</param>
 	/// <param name="to">The destination Point.</param>
-	public static void RegisterMove (Point from, Point to)
+	public void RegisterMove(Point from, Point to)
 	{
+		Qi fromQi = from.GetQi();
+		Qi toQi = to.GetQi();
+		if (Qi.Colour(fromQi) == Qi.R)
+		{
+			InternalBoardR[fromQi] = to;
+
+			if (toQi != Qi.None)
+				InternalBoardG.Remove(toQi);
+		}
+		else
+		{
+			InternalBoardG[fromQi] = to;
+
+			if (toQi != Qi.None)
+				InternalBoardR.Remove(toQi);
+		}
+
 		from.MoveOutbound(to);
 	}
 
@@ -149,9 +167,14 @@ public class Board : MonoBehaviour
 
 	void SpawnQis()
 	{
-		if (InternalBoard == null)
+		if (InternalBoardR == null)
 		{
-			InternalBoard = new Dictionary<Qi, Transform>();
+			InternalBoardR = new Dictionary<Qi, Point>();
+		}
+
+		if (InternalBoardG == null)
+		{
+			InternalBoardG = new Dictionary<Qi, Point>();
 		}
 
 		foreach (Point p in board)
@@ -171,24 +194,79 @@ public class Board : MonoBehaviour
 				newQi = Instantiate(byteToSprite[qi], p.Position, Quaternion.identity);
 			}
 
+			// After spawning a new qi, add it to their respective colour Dictionary.
+			if (Qi.Colour(qi) == Qi.R)
+			{
+				InternalBoardR.Add(p.GetQi(), p);
+			}
+			else
+			{
+				InternalBoardG.Add(p.GetQi(), p);
+			}
+
 			p.GetQi().SetTransform(newQi.transform);
 		}
 	}
 
 	/// <param name="index">The index to check for <see cref="Qi.None"/></param>
-	/// <param name="qi">The out byte of the qi at index, regardless of if it equals to <see cref="Qi.None"/></param>
+	/// <param name="qi">The out byte of the qi at index, regardless of if it equals to <see cref="Qi.None"/>.</param>
 	/// <returns>True if the qi at index is NOT <see cref="Qi.None"/></returns>
 	public bool QiIsNotNone(int index, out byte qi)
 	{
 		byte qiBoard = board[index].GetQiAsByte();
-		
+
 		qi = qiBoard;
 
-		return (qiBoard != Qi.None)
-			? true
-			: false;
+		return qiBoard != Qi.None;
 	}
 
+	public HashSet<Point> GetAttackedPoints(ref byte colourToGetAttacks)
+	{
+		MArray<Point> attackedMovesFromQisOfColour = new MArray<Point>();
+
+		if (colourToGetAttacks == Qi.R)
+		{
+			foreach (KeyValuePair<Qi, Point> qp in InternalBoardR)
+			{
+				MArray<Point> legalForThisQi = MoveHandler.Handle(this, qp.Value, true);
+				
+				// Sometimes the MArray will have nothing if a Paow cannot attack anything.
+				// Also do not pop the first element if this qi is a Paow; it will remove
+				// the first point that it can attack after finding something to launch over.
+				if (legalForThisQi.Num > 0 && Qi.Type(qp.Key) != Qi.Paow)
+					legalForThisQi.FirstPop();
+				attackedMovesFromQisOfColour += legalForThisQi;
+			}
+		}
+		else
+		{
+			foreach (KeyValuePair<Qi, Point> qp in InternalBoardG)
+			{
+				MArray<Point> legalForThisQi = MoveHandler.Handle(this, qp.Value, true);
+				
+				// Sometimes the MArray will have nothing if a Paow cannot attack anything.
+				// Also do not pop the first element if this qi is a Paow; it will remove
+				// the first point that it can attack after finding something to launch over.
+				if (legalForThisQi.Num > 0 && Qi.Type(qp.Key) != Qi.Paow)
+					legalForThisQi.FirstPop();
+				attackedMovesFromQisOfColour += legalForThisQi;
+			}
+		}
+
+		// Populate the HashSet of attacked points.
+		HashSet<Point> attacked = new HashSet<Point>();
+		for (int i = 0; i < attackedMovesFromQisOfColour.Num; ++i)
+		{
+			Point attackedPoint = attackedMovesFromQisOfColour[i];
+
+			if (!attacked.Contains(attackedPoint))
+				attacked.Add(attackedPoint);
+		}
+
+		return attacked;
+	}
+
+#if UNITY_EDITOR
 	void OnDrawGizmos()
 	{
 		if (Application.isPlaying)
@@ -196,9 +274,17 @@ public class Board : MonoBehaviour
 			for (int i = 0; i < 90; ++i)
 			{
 				Point p = board[i];
-				Gizmos.DrawSphere(p.Position, .1f);
+				//Gizmos.DrawSphere(p.Position, Scalar * .1f);
 				UnityEditor.Handles.Label(p.Position, (p.Position.y + " " + p.Position.x).ToString() + "\n" + p.GetQiAsByte().ToString() + "\n" + i);
 			}
+
+			if (MoveHandler.attacked != null)
+				foreach (var q in MoveHandler.attacked)
+				{
+					Gizmos.color = Color.yellow;
+					Gizmos.DrawSphere(q.Position, Scalar * .1f);
+				}
 		}
 	}
+#endif
 }

@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using MW;
 using MW.Easing;
@@ -42,11 +41,17 @@ public class PlayerUI : MonoBehaviour
 	const float kTimeToInterpolate = .55f;
 	const float kInverseInterpolationTime = 1 / kTimeToInterpolate;
 
+	/// <summary>Moves a <see cref="Transform"/> to a <see cref="Point.Position"/>.</summary>
+	/// <param name="t">The <see cref="Transform"/> to move to final.</param>
+	/// <param name="final">The <see cref="Point"/> for t to move to.</param>
 	public void Move(Transform t, Point final)
 	{
 		StartCoroutine(MoveTo(t, final));
 	}
 
+	/// <summary>Moves a <see cref="Transform"/> to a <see cref="Vector2"/>.</summary>
+	/// <param name="t">The <see cref="Transform"/> to move to final.</param>
+	/// <param name="final">The <see cref="Vector2"/> for t to move to.</param>
 	public void Move(Transform t, Vector2 final)
 	{
 		StartCoroutine(MoveTo(t, final));

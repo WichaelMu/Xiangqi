@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using MW;
 using MW.Diagnostics;
 
-/// <summary>Determines the legal moves for a given <see cref="Qi"/> using <see cref="Handle(Board, Point)"/>.</summary>
+/// <summary>Determines the legal moves for a given <see cref="Qi"/> using <see cref="Handle(Board, Point, bool)"/>.</summary>
 public class MoveHandler
 {
 	delegate bool Rule(int origin, int offset, byte colour, Board board = null);
@@ -16,11 +16,13 @@ public class MoveHandler
 	/// <summary>All legal moves on <see cref="Board.board"/> for <see cref="Qi.Goong"/>.</summary>
 	static readonly HashSet<int> GoongLegality = new HashSet<int> { 3, 4, 5, 12, 13, 14, 21, 22, 23, 56, 57, 58, 75, 76, 77, 84, 85, 86 };
 
+	public static HashSet<Point> attacked;
+
 	/// <summary>Handles legal movements, relative to the qi on origin.</summary>
 	/// <param name="board">The <see cref="Board"/> to search in.</param>
 	/// <param name="origin">The <see cref="Point"/> at which to handle the movements of it's qi.</param>
 	/// <returns>Legal moves.</returns>
-	public static MArray<Point> Handle(Board board, Point origin)
+	public static MArray<Point> Handle(Board board, Point origin, bool bGetAttacksOnly = false)
 	{
 		byte qi = origin.GetQiAsByte();
 		byte colour = Qi.Colour(qi);
@@ -28,7 +30,7 @@ public class MoveHandler
 
 		if (Qi.IsSlidingQi(qi))
 		{
-			return SlidingQi(board, origin.Index, colour, type);
+			return SlidingQi(board, origin.Index, colour, type, bGetAttacksOnly);
 		}
 		else if (Qi.IsDiagonalQi(qi))
 		{
@@ -52,56 +54,56 @@ public class MoveHandler
 	/// <param name="colour">The Qi.colour of this sliding qi.</param>
 	/// <param name="type">The type of sliding qi. Goo || Paow.</param>
 	/// <returns>Legal moves.</returns>
-	static MArray<Point> SlidingQi(Board board, int origin, byte colour, byte type)
+	static MArray<Point> SlidingQi(Board board, int origin, byte colour, byte type, bool bGetAttacksOnly = false)
 	{
 		MArray<Point> pseudoLegalMoves = new MArray<Point>();
 
 		if (type == Qi.Goo)
-			pseudoLegalMoves = TraverseInitialise(board, origin, Straight, SlidingRulesFailed, ref colour, ref type);
+			pseudoLegalMoves = TraverseInitialise(board, origin, Straight, SlidingRulesFailed, ref colour, ref type, bGetAttacksOnly: bGetAttacksOnly);
 		else
-			TraversePaow(ref board, origin, Straight, ref pseudoLegalMoves, ref colour);
+			TraversePaow(ref board, origin, Straight, ref pseudoLegalMoves, ref colour, bGetAttacksOnly);
 
 		return pseudoLegalMoves;
 	}
 
-	static MArray<Point> DiagonalQi(Board board, int origin, byte colour, byte type)
+	static MArray<Point> DiagonalQi(Board board, int origin, byte colour, byte type, bool bGetAttacksOnly = false)
 	{
 		MArray<Point> pseudoLegalMoves;
 
 		if (type == Qi.T)
 		{
-			pseudoLegalMoves = TraverseInitialise(board, origin, Diagonal, TRulesFailed, ref colour, ref type, depth: 1);
+			pseudoLegalMoves = TraverseInitialise(board, origin, Diagonal, TRulesFailed, ref colour, ref type, depth: 1, bGetAttacksOnly);
 		}
 		else
 		{
-			pseudoLegalMoves = TraverseInitialise(board, origin, Diagonal, JerngRulesFailed, ref colour, ref type, depth: 2);
+			pseudoLegalMoves = TraverseInitialise(board, origin, Diagonal, JerngRulesFailed, ref colour, ref type, depth: 2, bGetAttacksOnly);
 			RemoveDirectJerngMoves(ref pseudoLegalMoves);
 		}
 
 		return pseudoLegalMoves;
 	}
 
-	static MArray<Point> SingleMoveQi(Board board, int origin, byte colour, byte type)
+	static MArray<Point> SingleMoveQi(Board board, int origin, byte colour, byte type, bool bGetAttacksOnly = false)
 	{
 		MArray<Point> pseudoLegalMoves;
 
 		if (type == Qi.Xut)
 		{
-			pseudoLegalMoves = TraverseInitialise(board, origin, Straight, XutRulesFailed, ref colour, ref type, depth: 1);
+			pseudoLegalMoves = TraverseInitialise(board, origin, Straight, XutRulesFailed, ref colour, ref type, depth: 1, bGetAttacksOnly);
 		}
 		else
 		{
-			pseudoLegalMoves = TraverseInitialise(board, origin, Straight, GoongRulesFailed, ref colour, ref type, depth: 1);
+			pseudoLegalMoves = TraverseInitialise(board, origin, Straight, GoongRulesFailed, ref colour, ref type, depth: 1, bGetAttacksOnly);
 		}
 
 		return pseudoLegalMoves;
 	}
 
-	static MArray<Point> MaQi(Board board, int origin, byte colour)
+	static MArray<Point> MaQi(Board board, int origin, byte colour, bool bGetAttacksOnly = false)
 	{
 		MArray<Point> pseudoLegalMoves = new MArray<Point>();
 
-		TraverseMa(ref board, origin, Ma, ref pseudoLegalMoves, ref colour);
+		TraverseMa(ref board, origin, Ma, ref pseudoLegalMoves, ref colour, bGetAttacksOnly);
 
 		return pseudoLegalMoves;
 	}
@@ -131,13 +133,13 @@ public class MoveHandler
 	/// <param name="depth">How far this search should go.</param>
 	/// <param name="ignoreLastN">How many offsets from the back to ignore. (Going backwards).</param>
 	/// <returns>Legal moves.</returns>
-	static MArray<Point> TraverseInitialise(Board board, int origin, int[] offsets, Rule Law, ref byte colour, ref byte type, byte depth = 10)
+	static MArray<Point> TraverseInitialise(Board board, int origin, int[] offsets, Rule Law, ref byte colour, ref byte type, byte depth = 10, bool bGetAttacksOnly = false)
 	{
 		MArray<Point> legal = new MArray<Point>();
 		depth++;
 		for (int i = 0; i < offsets.Length; ++i)
 		{
-			Traverse(ref board, origin, offsets[i], Law, ref legal, ref depth, depth, ref colour, ref type);
+			Traverse(ref board, origin, offsets[i], Law, ref legal, ref depth, depth, ref colour, ref type, bGetAttacksOnly);
 		}
 
 		return legal;
@@ -152,7 +154,7 @@ public class MoveHandler
 	/// <param name="depth">The offset-wise distance from the initial traversal origin. Default to 10 for no restriction.</param>
 	/// <param name="colour">The Qi.colour to indicate a friendly qi.</param>
 	/// <param name="type">The type of Qi.</param>
-	static void Traverse(ref Board board, int origin, int offset, Rule Law, ref MArray<Point> legal, ref byte depthToBeginWith, byte depth, ref byte colour, ref byte type)
+	static void Traverse(ref Board board, int origin, int offset, Rule Law, ref MArray<Point> legal, ref byte depthToBeginWith, byte depth, ref byte colour, ref byte type, bool bGetAttacksOnly)
 	{
 		// Log.Print(origin, offset, depth);
 		// If out of bounds, exit. If depth limit reached, also exit.
@@ -164,10 +166,13 @@ public class MoveHandler
 		// If reached another qi, exit.
 		if (board.QiIsNotNone(origin, out byte qi) && depth != depthToBeginWith)
 		{
-			// Do not include this qi if it is the same colour.
-			if (Qi.Colour(qi) == colour)
+			if (!bGetAttacksOnly)
 			{
-				legal.TopPop();
+				// Do not include this qi if it is the same colour.
+				if (Qi.Colour(qi) == colour)
+				{
+					legal.TopPop();
+				}
 			}
 
 			return;
@@ -183,7 +188,7 @@ public class MoveHandler
 			return;
 		}
 
-		Traverse(ref board, origin + offset, offset, Law, ref legal, ref depthToBeginWith, (byte)(depth - 1), ref colour, ref type);
+		Traverse(ref board, origin + offset, offset, Law, ref legal, ref depthToBeginWith, (byte)(depth - 1), ref colour, ref type, bGetAttacksOnly);
 	}
 
 	static bool AttemptedTraversalToFurtherLeftOrRight(int origin, int afterOffset)
@@ -276,15 +281,15 @@ public class MoveHandler
 		return !GoongLegality.Contains(afterOffset);
 	}
 
-	static void TraversePaow(ref Board board, int origin, int[] offsets, ref MArray<Point> legal, ref byte colour)
+	static void TraversePaow(ref Board board, int origin, int[] offsets, ref MArray<Point> legal, ref byte colour, bool bGetOnlyAttacks = false)
 	{
 		foreach (int offset in offsets)
 		{
-			TraversePaowLogic(ref board, origin, offset, origin, 10, ref legal, ref colour);
+			TraversePaowLogic(ref board, origin, offset, origin, 10, ref legal, ref colour, bGetOnlyAttacks);
 		}
 	}
 
-	static void TraversePaowLogic(ref Board board, int origin, int offset, int originOrigin, byte depth, ref MArray<Point> legal, ref byte colour)
+	static void TraversePaowLogic(ref Board board, int origin, int offset, int originOrigin, byte depth, ref MArray<Point> legal, ref byte colour, bool bGetAttacksOnly)
 	{
 		if (origin > 89 || origin < 0 || depth == 0)
 			return;
@@ -314,20 +319,24 @@ public class MoveHandler
 					bFoundSomething = true;
 				}
 
+				if (bGetAttacksOnly)
+					legal.Push(board.At(tempOrigin));
+
 			} while (!bFoundSomething);
 
 			return;
 		}
 
-		legal.Push(board.At(origin));
+		if (!bGetAttacksOnly)
+			legal.Push(board.At(origin));
 
 		if (AttemptedTraversalToFurtherLeftOrRight(origin, origin + offset))
 			return;
 
-		TraversePaowLogic(ref board, origin + offset, offset, originOrigin, --depth, ref legal, ref colour);
+		TraversePaowLogic(ref board, origin + offset, offset, originOrigin, --depth, ref legal, ref colour, bGetAttacksOnly);
 	}
 
-	static void TraverseMa(ref Board board, int origin, int[] offsets, ref MArray<Point> legal, ref byte colour)
+	static void TraverseMa(ref Board board, int origin, int[] offsets, ref MArray<Point> legal, ref byte colour, bool bGetAttacksOnly = false)
 	{
 		// A Ma can be blocked from going in any cardinal direction if there is a qi blocking that direction.
 		HashSet<int> blocked = new HashSet<int>();
@@ -377,8 +386,9 @@ public class MoveHandler
 				continue;
 
 			if (board.QiIsNotNone(afterOffset, out byte qi))
-				if (Qi.Colour(qi) == colour)
-					continue;
+				if (!bGetAttacksOnly)
+					if (Qi.Colour(qi) == colour)
+						continue;
 
 			legal.Push(board.At(afterOffset));
 		}

@@ -72,18 +72,22 @@ public class Player : MonoBehaviour
 					{
 						if (currentPlayer == Qi.R)
 						{
+							board.InternalBoardR.Remove(pointUnderMouse.GetQi());
 							ui.Move(pointUnderMouse.GetQiTransform(), capturedQisRed.position);
 							capturedQisRed.position -= capturedQisOffset;
 						}
 						else
 						{
+							board.InternalBoardG.Remove(pointUnderMouse.GetQi());
 							ui.Move(pointUnderMouse.GetQiTransform(), capturedQisGre.position);
 							capturedQisGre.position -= capturedQisOffset;
 						}
 					}
 
 					// Immediately move the selected qi to the pointUnderMouse. In memory only, not visual.
-					Board.RegisterMove(legalMoves[0], pointUnderMouse);
+					board.RegisterMove(legalMoves[0], pointUnderMouse);
+
+					MoveHandler.attacked = board.GetAttackedPoints(ref currentPlayer);
 
 					// Move the selected qi to the pointUnderMouse. Visually only, not memory.
 					ui.Move(pointUnderMouse.GetQiTransform(), pointUnderMouse);
